@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THE GENIUS · 카드 매칭</title>
+  <style>
+    :root {
+      --gap: 0.55vh;
+      --card-h: calc((87vh - 4 * var(--gap)) / 5);
+      --card-w: calc(var(--card-h) * 5 / 7);
+      --radius: clamp(6px, 1vh, 12px);
+
+      --gold:        #c9a84c;
+      --gold-light:  #e8d080;
+      --gold-dim:    #7a6228;
+      --bg-deep:     #06060e;
+      --bg-card:     #0c0c1a;
+      --bg-panel:    rgba(255,255,255,.04);
+      --border-subtle: rgba(201,168,76,.18);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      height: 100vh;
+      /* dark crosshatch grid texture + deep radial */
+      background-color: var(--bg-deep);
+      background-image:
+        linear-gradient(rgba(201,168,76,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,.04) 1px, transparent 1px),
+        radial-gradient(ellipse 80% 60% at 50% 0%, #14142a 0%, var(--bg-deep) 100%);
+      background-size: 40px 40px, 40px 40px, 100% 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5vh 2.5vw;
+      gap: 1vh;
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+      color: #d4c8a8;
+    }
+
+    /* ── Header ──────────────────────────────────────────── */
+    .header {
+      width: 100%;
+      max-width: calc(var(--card-w) * 6 + var(--gap) * 5);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2vw;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 1vh;
+    }
+
+    h1 {
+      font-size: clamp(1rem, 2.6vh, 2.2rem);
+      font-weight: 900;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dim) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      white-space: nowrap;
+      filter: drop-shadow(0 0 12px rgba(201,168,76,.35));
+    }
+
+    .stats {
+      display: flex;
+      gap: clamp(12px, 2.5vw, 52px);
+      font-size: clamp(0.8rem, 1.8vh, 1.4rem);
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      padding: 0.5vh 2vw;
+      border-radius: 4px;
+      white-space: nowrap;
+      letter-spacing: 1px;
+    }
+
+    .stats .label { color: var(--gold-dim); font-size: .8em; text-transform: uppercase; margin-right: .3em; }
+    .stats b { color: var(--gold-light); font-weight: 700; }
+
+    /* ── Button ──────────────────────────────────────────── */
+    .btn {
+      padding: 0.55vh 2vw;
+      font-size: clamp(0.8rem, 1.7vh, 1.3rem);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold-dim);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .btn:hover {
+      background: rgba(201,168,76,.12);
+      border-color: var(--gold);
+      color: var(--gold-light);
+      box-shadow: 0 0 18px rgba(201,168,76,.2);
+    }
+    .btn:active { transform: scale(.96); }
+
+    /* ── Board ───────────────────────────────────────────── */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(6, var(--card-w));
+      grid-auto-rows: var(--card-h);
+      gap: var(--gap);
+      flex-shrink: 0;
+    }
+
+    /* ── Card ────────────────────────────────────────────── */
+    .card-wrap {
+      width: var(--card-w);
+      height: var(--card-h);
+      perspective: 1400px;
+      cursor: pointer;
+    }
+
+    .card-wrap:hover:not(.flipped):not(.matched) .card {
+      transform: translateY(-2px);
+      filter: brightness(1.15);
+    }
+
+    .card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform .45s cubic-bezier(.4,0,.2,1),
+                  filter .2s ease;
+    }
+
+    .card-wrap.flipped .card,
+    .card-wrap.matched .card {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    /* ── Back face ── */
+    .card-back {
+      background:
+        repeating-linear-gradient(
+          45deg,
+          rgba(201,168,76,.055) 0px, rgba(201,168,76,.055) 1px,
+          transparent 1px, transparent 9px
+        ),
+        linear-gradient(160deg, #141428 0%, #0a0a18 100%);
+      border: 1.5px solid var(--gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1.6rem, 4.8vh, 4.2rem);
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 14px rgba(201,168,76,.5);
+      box-shadow:
+        inset 0 0 30px rgba(0,0,0,.6),
+        0 2px 8px rgba(0,0,0,.6);
+    }
+
+    .card-back::before {
+      content: '';
+      position: absolute;
+      inset: 0.4vh;
+      border: 1px solid rgba(201,168,76,.2);
+      border-radius: calc(var(--radius) - 2px);
+    }
+
+    /* ── Front face ── */
+    .card-front {
+      transform: rotateY(180deg);
+      background: #faf8f2;
+      border: 1.5px solid #d4c8a0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+    }
+
+    .card-wrap.matched .card-front {
+      background: #f5f0e0;
+      border-color: var(--gold);
+      box-shadow:
+        inset 0 0 0 1px var(--gold-dim),
+        0 0 16px rgba(201,168,76,.35);
+    }
+
+    /* ── Card labels ── */
+    .corner {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.1;
+      font-weight: 900;
+      font-size: clamp(0.75rem, 1.9vh, 1.5rem);
+    }
+
+    .corner-tl { top: 0.45vh;    left: 0.6vh; }
+    .corner-br { bottom: 0.45vh; right: 0.6vh; transform: rotate(180deg); }
+
+    .suit-center { font-size: clamp(1.8rem, 5.2vh, 4.8rem); }
+
+    .red   { color: #b91c1c; }
+    .black { color: #111; }
+
+    /* ── Center toast ────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    .toast-inner {
+      font-size: clamp(2rem, 7vh, 6.5rem);
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      padding: 2vh 7vw;
+      border-radius: 4px;
+      opacity: 0;
+      transform: scale(.6) translateY(10px);
+      transition: opacity .17s ease, transform .17s ease;
+    }
+
+    .toast-inner.show { opacity: 1; transform: scale(1) translateY(0); }
+
+    .toast-inner.hide {
+      opacity: 0;
+      transform: scale(1.08) translateY(-6px);
+      transition: opacity .32s ease, transform .32s ease;
+    }
+
+    .toast-inner.ok {
+      background: rgba(8,8,16,.92);
+      color: var(--gold-light);
+      border: 2px solid var(--gold-dim);
+      box-shadow: 0 0 40px rgba(201,168,76,.3), inset 0 0 30px rgba(201,168,76,.06);
+      text-shadow: 0 0 20px rgba(201,168,76,.6);
+    }
+
+    .toast-inner.ng {
+      background: rgba(8,8,16,.92);
+      color: #e57373;
+      border: 2px solid #7f1d1d;
+      box-shadow: 0 0 40px rgba(185,28,28,.3), inset 0 0 30px rgba(185,28,28,.06);
+      text-shadow: 0 0 20px rgba(185,28,28,.6);
+    }
+
+    /* ── Win overlay ─────────────────────────────────────── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.85);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .overlay.show { display: flex; }
+
+    .win-box {
+      background: linear-gradient(160deg, #0e0e1e 0%, #080812 100%);
+      border: 1px solid var(--gold-dim);
+      border-radius: 6px;
+      padding: 5vh 8vw;
+      text-align: center;
+      box-shadow:
+        0 0 60px rgba(201,168,76,.18),
+        0 20px 60px rgba(0,0,0,.8),
+        inset 0 0 40px rgba(201,168,76,.04);
+      animation: pop .4s cubic-bezier(.17,.67,.6,1.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .win-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          45deg,
+          rgba(201,168,76,.03) 0px, rgba(201,168,76,.03) 1px,
+          transparent 1px, transparent 10px
+        );
+    }
+
+    .win-box h2 {
+      font-size: clamp(2rem, 5.5vh, 4.5rem);
+      font-weight: 900;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dim));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5vh;
+      filter: drop-shadow(0 0 16px rgba(201,168,76,.4));
+      position: relative;
+    }
+
+    .win-box p {
+      font-size: clamp(1rem, 2.6vh, 2rem);
+      margin-bottom: 3.5vh;
+      color: #a09070;
+      letter-spacing: 1px;
+      position: relative;
+    }
+
+    .win-box .btn {
+      font-size: clamp(0.9rem, 2.2vh, 1.8rem);
+      padding: 1.2vh 4vw;
+      position: relative;
+    }
+
+    @keyframes pop {
+      from { transform: scale(.55); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    /* ── Divider line ── */
+    .win-box .divider {
+      width: 40%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+      margin: 0 auto 3vh;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🂡 The Genius · Card Match</h1>
+  <div class="stats">
+    <span><span class="label">Pairs</span><b id="pairs">0</b> / 15</span>
+    <span><span class="label">Tries</span><b id="tries">0</b></span>
+    <span><span class="label">Time</span><b id="timer">0</b>s</span>
+  </div>
+  <button class="btn" id="restart-btn">New Game</button>
+</div>
+
+<div class="board" id="board"></div>
+
+<div class="toast">
+  <div class="toast-inner" id="toast-inner"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="win-box">
+    <h2>Clear</h2>
+    <div class="divider"></div>
+    <p id="win-msg"></p>
+    <button class="btn" onclick="startGame()">Play Again</button>
+  </div>
+</div>
+
+<script>
+const VALUES = ['A','2','3','4','5','6','7','8','9','10'];
+const SUITS  = [
+  { suit:'hearts', sym:'♥' },
+  { suit:'spades', sym:'♠' },
+  { suit:'clubs',  sym:'♣' },
+];
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function pickRandom5(arr) {
+  return shuffle([...arr]).slice(0, 5);
+}
+
+function buildCardTypes() {
+  const types = [];
+  SUITS.forEach(s => {
+    pickRandom5(VALUES).forEach(val => {
+      types.push({ suit: s.suit, sym: s.sym, val });
+    });
+  });
+  return types;
+}
+
+let deck = [], flipped = [], matched = 0, tries = 0, locked = false;
+let timerSec = 0, timerRef = null, toastTimer = null;
+
+function showToast(text, type, ms = 900) {
+  const inner = document.getElementById('toast-inner');
+  if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
+
+  inner.textContent = text;
+  inner.className = `toast-inner ${type}`;
+  requestAnimationFrame(() => requestAnimationFrame(() => inner.classList.add('show')));
+
+  toastTimer = setTimeout(() => {
+    inner.classList.remove('show');
+    inner.classList.add('hide');
+    toastTimer = setTimeout(() => {
+      inner.className = 'toast-inner';
+      inner.textContent = '';
+    }, 360);
+  }, ms);
+}
+
+function updateStats() {
+  document.getElementById('pairs').textContent = matched;
+  document.getElementById('tries').textContent = tries;
+}
+
+function startTimer() {
+  stopTimer();
+  timerSec = 0;
+  document.getElementById('timer').textContent = 0;
+  timerRef = setInterval(() => {
+    document.getElementById('timer').textContent = ++timerSec;
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerRef) { clearInterval(timerRef); timerRef = null; }
+}
+
+function makeCardEl(card) {
+  const col = (card.suit === 'hearts') ? 'red' : 'black';
+  const wrap = document.createElement('div');
+  wrap.className = 'card-wrap';
+  wrap.dataset.idx = card.idx;
+  wrap.innerHTML = `
+    <div class="card">
+      <div class="card-face card-back">${card.num}</div>
+      <div class="card-face card-front">
+        <div class="corner corner-tl ${col}"><span>${card.val}</span><span>${card.sym}</span></div>
+        <div class="suit-center ${col}">${card.sym}</div>
+        <div class="corner corner-br ${col}"><span>${card.val}</span><span>${card.sym}</span></div>
+      </div>
+    </div>`;
+  wrap.addEventListener('click', () => onCardClick(card.idx));
+  return wrap;
+}
+
+function renderBoard() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  deck.forEach(card => board.appendChild(makeCardEl(card)));
+}
+
+function onCardClick(idx) {
+  if (locked) return;
+  const card = deck[idx];
+  if (card.isFlipped || card.isMatched) return;
+  if (flipped.length >= 2) return;
+
+  card.isFlipped = true;
+  getWrap(idx).classList.add('flipped');
+  flipped.push(idx);
+
+  if (flipped.length === 2) {
+    tries++;
+    updateStats();
+    locked = true;
+    setTimeout(checkMatch, 460); // wait for flip animation (0.45s)
+  }
+}
+
+function getWrap(idx) {
+  return document.querySelector(`.card-wrap[data-idx="${idx}"]`);
+}
+
+function checkMatch() {
+  const [a, b] = flipped;
+  if (deck[a].pairId === deck[b].pairId) {
+    deck[a].isMatched = deck[b].isMatched = true;
+    getWrap(a).classList.add('matched');
+    getWrap(b).classList.add('matched');
+    matched++;
+    updateStats();
+    flipped = [];
+    locked = false;
+
+    if (matched === 15) {
+      stopTimer();
+      setTimeout(showWin, 400);
+    } else {
+      showToast('MATCH', 'ok', 850);
+    }
+  } else {
+    showToast('MISS', 'ng', 850);
+    setTimeout(() => {
+      deck[a].isFlipped = deck[b].isFlipped = false;
+      getWrap(a).classList.remove('flipped');
+      getWrap(b).classList.remove('flipped');
+      flipped = [];
+      locked = false;
+    }, 1100);
+  }
+}
+
+function showWin() {
+  document.getElementById('win-msg').textContent =
+    `${tries} attempts  ·  ${timerSec}s`;
+  document.getElementById('overlay').classList.add('show');
+}
+
+function startGame() {
+  document.getElementById('overlay').classList.remove('show');
+  matched = 0; tries = 0; flipped = []; locked = false;
+  updateStats();
+
+  const types = buildCardTypes();
+  let cards = [];
+  types.forEach((t, pid) => {
+    cards.push({ ...t, pairId: pid, isFlipped: false, isMatched: false });
+    cards.push({ ...t, pairId: pid, isFlipped: false, isMatched: false });
+  });
+
+  shuffle(cards);
+  deck = cards.map((c, i) => ({ ...c, idx: i, num: i + 1 }));
+
+  renderBoard();
+  startTimer();
+}
+
+document.getElementById('restart-btn').addEventListener('click', startGame);
+startGame();
+</script>
+</body>
+</html>
