@@ -1,0 +1,1068 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>포커 딜 - 참가자 브리핑</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500;700;800;900&family=Orbitron:wght@700;900&display=swap");
+
+    :root {
+      --bg: #090909;
+      --bg-2: #11100d;
+      --panel: #171510;
+      --panel-2: #221d13;
+      --line: rgba(210, 172, 84, 0.34);
+      --gold: #d7aa45;
+      --gold-2: #f1d38a;
+      --ink: #f6efe0;
+      --muted: #bfb49d;
+      --dim: #817765;
+      --red: #df5a5a;
+      --black: #121212;
+      --green: #7fd190;
+      --blue: #74a8e8;
+      --danger: #ff7666;
+      --shadow: rgba(0, 0, 0, 0.48);
+      --font: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+      --mono: "Orbitron", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(215,170,69,0.06), transparent 38vh),
+        radial-gradient(circle at 18% 10%, rgba(215,170,69,0.22), transparent 36rem),
+        radial-gradient(circle at 88% 18%, rgba(116,168,232,0.16), transparent 34rem),
+        linear-gradient(135deg, #050505 0%, #11100d 52%, #1b1307 100%);
+      font-family: var(--font);
+      letter-spacing: 0;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.026) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.026) 1px, transparent 1px);
+      background-size: 54px 54px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.76), transparent 80%);
+    }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 10;
+      height: 68px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(6, 6, 6, 0.88);
+      backdrop-filter: blur(16px);
+    }
+
+    .topbar-inner {
+      width: min(1500px, calc(100% - 48px));
+      height: 68px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 230px;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--gold);
+      transform: rotate(45deg);
+      background: linear-gradient(135deg, rgba(215,170,69,0.28), rgba(0,0,0,0.1));
+      box-shadow: 0 0 26px rgba(215,170,69,0.24);
+      flex: 0 0 auto;
+    }
+
+    .brand strong {
+      display: block;
+      color: var(--gold-2);
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .brand span {
+      display: block;
+      color: var(--dim);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 10px 0;
+    }
+
+    nav::-webkit-scrollbar { display: none; }
+
+    nav a {
+      border: 1px solid rgba(215,170,69,0.28);
+      border-radius: 5px;
+      background: rgba(34, 29, 19, 0.72);
+      color: var(--muted);
+      padding: 9px 12px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--ink);
+      border-color: rgba(215,170,69,0.82);
+      background: rgba(215,170,69,0.14);
+    }
+
+    main {
+      height: 100vh;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      scroll-padding-top: 68px;
+    }
+
+    section {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      padding: 96px 0 40px;
+      position: relative;
+    }
+
+    .wrap {
+      width: min(1500px, calc(100% - 64px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding-top: 82px;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 18vh;
+      background: linear-gradient(to top, rgba(9,9,9,0.88), transparent);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 54px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-family: var(--mono);
+      font-size: clamp(18px, 2vw, 32px);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin: 0 0 22px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(86px, 11vw, 172px);
+      font-weight: 900;
+      line-height: 0.9;
+      text-shadow: 0 28px 70px rgba(0,0,0,0.78), 0 0 42px rgba(215,170,69,0.18);
+      word-break: keep-all;
+    }
+
+    .hero-copy {
+      margin: 28px 0 0;
+      max-width: 900px;
+      color: var(--muted);
+      font-size: clamp(25px, 2.6vw, 40px);
+      font-weight: 900;
+      line-height: 1.34;
+      word-break: keep-all;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    .meta {
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: rgba(23, 21, 16, 0.76);
+      padding: 12px 16px;
+      color: var(--gold-2);
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .market-board {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: linear-gradient(160deg, rgba(34,29,19,0.86), rgba(8,8,8,0.78));
+      box-shadow: 0 28px 90px var(--shadow);
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .market-board::before {
+      content: "POKER DEAL";
+      position: absolute;
+      right: -20px;
+      top: 18px;
+      color: rgba(215,170,69,0.08);
+      font-family: var(--mono);
+      font-size: 72px;
+      font-weight: 900;
+      transform: rotate(6deg);
+    }
+
+    .banker-line {
+      position: relative;
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(30px, 3vw, 52px);
+      font-weight: 900;
+      line-height: 1.25;
+      word-break: keep-all;
+    }
+
+    .quote {
+      position: relative;
+      margin-top: 28px;
+      border-left: 3px solid var(--gold);
+      padding-left: 22px;
+      color: var(--muted);
+      font-size: clamp(20px, 1.8vw, 28px);
+      font-weight: 800;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
+
+    h2 {
+      margin: 0 0 24px;
+      color: var(--ink);
+      font-size: clamp(48px, 6vw, 92px);
+      font-weight: 900;
+      line-height: 1.02;
+      word-break: keep-all;
+    }
+
+    .lead {
+      max-width: 1120px;
+      margin: 0 0 34px;
+      color: var(--muted);
+      font-size: clamp(24px, 2.2vw, 34px);
+      font-weight: 850;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+    .panel {
+      border: 1px solid rgba(215,170,69,0.28);
+      border-radius: 6px;
+      background: rgba(23,21,16,0.78);
+      box-shadow: 0 22px 62px rgba(0,0,0,0.32);
+      padding: 24px;
+      min-width: 0;
+    }
+
+    .panel h3 {
+      margin: 0 0 12px;
+      color: var(--gold-2);
+      font-size: clamp(24px, 2vw, 34px);
+      font-weight: 900;
+      line-height: 1.18;
+      word-break: keep-all;
+    }
+
+    .panel p,
+    .panel li {
+      color: var(--muted);
+      font-size: clamp(17px, 1.34vw, 22px);
+      font-weight: 750;
+      line-height: 1.46;
+      word-break: keep-all;
+    }
+
+    .panel p { margin: 0; }
+
+    ul {
+      margin: 0;
+      padding-left: 1.2em;
+    }
+
+    .number {
+      color: var(--gold);
+      font-family: var(--mono);
+      font-size: clamp(36px, 4vw, 64px);
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: 1.1fr 0.95fr 1.45fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .flow-step {
+      border: 1px solid rgba(215,170,69,0.26);
+      border-radius: 5px;
+      background: rgba(23,21,16,0.78);
+      padding: 18px;
+    }
+
+    .flow-step strong {
+      display: block;
+      color: var(--gold-2);
+      font-size: clamp(24px, 1.8vw, 32px);
+      font-weight: 900;
+      line-height: 1.15;
+      word-break: keep-all;
+    }
+
+    .flow-step span {
+      display: block;
+      color: var(--gold);
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .flow-step p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: clamp(16px, 1.18vw, 21px);
+      font-weight: 750;
+      line-height: 1.42;
+      word-break: keep-all;
+    }
+
+    .dividend-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 6px;
+      background: rgba(23,21,16,0.8);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.34);
+    }
+
+    .dividend-table th,
+    .dividend-table td {
+      border-bottom: 1px solid rgba(215,170,69,0.18);
+      padding: 19px 18px;
+      text-align: left;
+      vertical-align: middle;
+      word-break: keep-all;
+    }
+
+    .dividend-table th {
+      color: var(--gold-2);
+      background: rgba(215,170,69,0.1);
+      font-size: clamp(18px, 1.25vw, 22px);
+      font-weight: 900;
+    }
+
+    .dividend-table td {
+      color: var(--muted);
+      font-size: clamp(18px, 1.34vw, 24px);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .dividend-table td:first-child {
+      color: var(--ink);
+      font-size: clamp(20px, 1.55vw, 28px);
+      font-weight: 900;
+    }
+
+    .reward {
+      color: var(--gold-2);
+      font-family: var(--mono);
+      font-size: clamp(26px, 2.3vw, 42px);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .cards-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .card {
+      width: 92px;
+      aspect-ratio: 2.5 / 3.5;
+      border-radius: 8px;
+      background: #f8f2e6;
+      color: #111;
+      border: 1px solid rgba(255,255,255,0.55);
+      box-shadow: 0 18px 42px rgba(0,0,0,0.36);
+      display: grid;
+      place-items: center;
+      position: relative;
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .card::before,
+    .card::after {
+      position: absolute;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .card::before {
+      content: attr(data-corner);
+      top: 9px;
+      left: 9px;
+    }
+
+    .card::after {
+      content: attr(data-corner);
+      right: 9px;
+      bottom: 9px;
+      transform: rotate(180deg);
+    }
+
+    .heart { color: #d22e42; }
+    .spade, .club { color: #111; }
+    .joker {
+      background: linear-gradient(145deg, #f7efe0, #d7aa45);
+      color: #15120b;
+      font-family: var(--mono);
+      font-size: 22px;
+    }
+
+    .portfolio-cards {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .combo-rule {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--ink);
+      font-size: clamp(24px, 1.9vw, 34px);
+      font-weight: 900;
+      line-height: 1.2;
+      word-break: keep-all;
+    }
+
+    .example-label {
+      display: inline-flex;
+      align-items: center;
+      margin: 0 0 8px;
+      border: 1px solid rgba(215,170,69,0.42);
+      border-radius: 999px;
+      padding: 5px 10px;
+      background: rgba(215,170,69,0.12);
+      color: var(--gold-2);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .portfolio-cards .card {
+      width: 54px;
+      border-radius: 6px;
+      font-size: 20px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.32);
+    }
+
+    .portfolio-cards .card::before,
+    .portfolio-cards .card::after {
+      font-size: 10px;
+    }
+
+    .portfolio-cards .card::before {
+      top: 6px;
+      left: 6px;
+    }
+
+    .portfolio-cards .card::after {
+      right: 6px;
+      bottom: 6px;
+    }
+
+    .plus {
+      color: var(--gold);
+      font-family: var(--mono);
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .portfolio-note {
+      display: block;
+      margin-top: 10px;
+      color: var(--dim);
+      font-size: clamp(15px, 1vw, 18px);
+      font-weight: 900;
+      line-height: 1.3;
+      word-break: keep-all;
+    }
+
+    .stamp {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 86px;
+      border: 1px solid rgba(215,170,69,0.42);
+      border-radius: 5px;
+      padding: 8px 12px;
+      background: rgba(215,170,69,0.12);
+      color: var(--gold-2);
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .deal-visual {
+      min-height: 142px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .chip-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 5px dashed rgba(255,255,255,0.72);
+      background:
+        radial-gradient(circle at center, #3b1f16 0 31%, transparent 32%),
+        radial-gradient(circle at center, #f1d38a 0 52%, #b98724 53% 100%);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.38);
+      display: inline-grid;
+      place-items: center;
+      color: #fff5d8;
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .chip.blue {
+      border-color: rgba(222,241,255,0.76);
+      background:
+        radial-gradient(circle at center, #12304b 0 31%, transparent 32%),
+        radial-gradient(circle at center, #bfe7ff 0 52%, #2f79bf 53% 100%);
+      color: #f2fbff;
+    }
+
+    .deal-visual .card {
+      width: 74px;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.34);
+    }
+
+    .secret-stack {
+      position: relative;
+      padding: 6px 10px 0;
+    }
+
+    .secret-stack .card {
+      margin-left: -18px;
+    }
+
+    .secret-stack .card:first-child {
+      margin-left: 0;
+    }
+
+    .secret-badge {
+      position: absolute;
+      right: 0;
+      bottom: -10px;
+      border: 1px solid rgba(255,118,102,0.54);
+      border-radius: 999px;
+      background: rgba(95,25,22,0.92);
+      color: #ffd2cb;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.32);
+    }
+
+    .warning {
+      border-color: rgba(255,118,102,0.4);
+      background: rgba(95, 25, 22, 0.54);
+    }
+
+    .warning h3 { color: #ffc1b8; }
+
+    .ok {
+      border-color: rgba(127,209,144,0.4);
+      background: rgba(22, 70, 38, 0.38);
+    }
+
+    .ok h3 { color: #b9f0c3; }
+
+    .black-panel {
+      background: linear-gradient(145deg, rgba(8,8,8,0.88), rgba(34,29,19,0.74));
+    }
+
+    .formula {
+      border: 1px solid rgba(215,170,69,0.35);
+      border-radius: 6px;
+      background: rgba(0,0,0,0.38);
+      padding: 22px;
+      color: var(--gold-2);
+      font-family: var(--mono);
+      font-size: clamp(22px, 2vw, 34px);
+      font-weight: 900;
+      line-height: 1.36;
+      word-break: keep-all;
+    }
+
+    .pager {
+      position: fixed;
+      right: 22px;
+      bottom: 20px;
+      z-index: 12;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: var(--dim);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .pager button {
+      border: 1px solid rgba(215,170,69,0.42);
+      border-radius: 5px;
+      background: rgba(23,21,16,0.86);
+      color: var(--gold-2);
+      width: 42px;
+      height: 38px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .small-note {
+      margin-top: 18px;
+      color: var(--dim);
+      font-size: clamp(15px, 1vw, 18px);
+      font-weight: 800;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    @media (max-width: 1100px) {
+      body { overflow: auto; }
+      main { scroll-snap-type: none; }
+      section { min-height: auto; padding: 100px 0 48px; }
+      .hero-grid, .grid.two, .grid.three, .grid.five, .flow {
+        grid-template-columns: 1fr;
+      }
+      h1 { font-size: clamp(64px, 17vw, 118px); }
+      .topbar { position: sticky; }
+      .topbar-inner { width: min(100% - 28px, 1500px); }
+      .wrap { width: min(100% - 28px, 1500px); }
+      .brand { min-width: 0; }
+      .brand span { display: none; }
+      .pager { display: none; }
+      .card { width: 78px; }
+      .dividend-table th:nth-child(2),
+      .dividend-table td:nth-child(2) { min-width: 360px; }
+      .table-scroll { overflow-x: auto; }
+    }
+
+    @media print {
+      body { overflow: visible; background: #0b0b0b; }
+      main { height: auto; overflow: visible; }
+      .topbar, .pager { display: none; }
+      section { min-height: auto; page-break-after: always; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark"></div>
+        <div>
+          <strong>POKER DEAL</strong>
+          <span>포커 협상 게임</span>
+        </div>
+      </div>
+      <nav aria-label="브리핑 목차">
+        <a href="#intro">개요</a>
+        <a href="#deal">분배</a>
+        <a href="#negotiate">협상</a>
+        <a href="#board">제출</a>
+        <a href="#joker">조커</a>
+        <a href="#penalty">벌금</a>
+        <a href="#tips">팁</a>
+        <a href="#score">승리</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="slides">
+    <section class="hero" id="intro">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="eyebrow">Poker Trading Game</p>
+          <h1>Poker<br>Deal</h1>
+          <p class="hero-copy">카드를 거래하고, 딜 보드에 맞는 조합을 제출해 칩을 얻으십시오.</p>
+          <div class="meta-row">
+            <span class="meta">15인 개인전</span>
+            <span class="meta">3라운드</span>
+            <span class="meta">협상 및 제출 10분</span>
+            <span class="meta">최종 보유 칩 승리</span>
+          </div>
+        </div>
+        <div class="market-board">
+          <p class="banker-line">받은 카드는 시작일 뿐입니다.</p>
+          <p class="quote">3라운드 종료 후 가장 많은 칩을 보유한 플레이어가 승리합니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="deal">
+      <div class="wrap">
+        <h2>카드 분배</h2>
+        <p class="lead">라운드가 시작되면 카드와 칩을 받고, 자기 카드만 확인합니다.</p>
+        <div class="grid three">
+          <article class="panel ok">
+            <div class="deal-visual" aria-label="기본 칩 5개">
+              <div class="chip-row">
+                <span class="chip blue"> </span>
+                <span class="chip blue"> </span>
+                <span class="chip blue"> </span>
+                <span class="chip blue"> </span>
+                <span class="chip blue"> </span>
+              </div>
+            </div>
+            <h3>기본 칩</h3>
+            <p>1라운드 시작 전 모든 플레이어는 기본 칩 5칩을 받습니다.</p>
+          </article>
+          <article class="panel">
+            <div class="deal-visual" aria-label="일반 카드 2장 예시">
+              <div class="cards-row">
+                <div class="card spade" data-corner="7♠️">♠️7</div>
+                <div class="card heart" data-corner="4♥️">♥️4</div>
+              </div>
+            </div>
+            <h3>일반 플레이어</h3>
+            <p>매 라운드 모든 플레이어는 일반 카드 2장을 비공개로 받습니다.</p>
+          </article>
+          <article class="panel warning">
+            <div class="deal-visual" aria-label="비밀 조커 포함 3장 예시">
+              <div class="cards-row secret-stack">
+                <div class="card club" data-corner="9♣️">♣️9</div>
+                <div class="card spade" data-corner="2♠️">♠️2</div>
+                <div class="card joker" data-corner="JOKER">JOKER</div>
+                <span class="secret-badge">비밀 1명</span>
+              </div>
+            </div>
+            <h3>조커 플레이어</h3>
+            <p>무작위 1명은 조커 카드 1장을 추가로 받아 총 3장으로 시작합니다.</p>
+          </article>
+        </div>
+        <p class="small-note">2라운드부터는 라운드 시작 전에 유지비 1칩을 추가로 받습니다.</p>
+      </div>
+    </section>
+
+    <section id="negotiate">
+      <div class="wrap">
+        <h2>자유 협상</h2>
+        <p class="lead">카드 분배 후 10분 동안 카드를 사고팔고, 정보를 거래하고, 연합을 만들 수 있습니다.</p>
+        <div class="grid three">
+          <article class="panel ok">
+            <h3>일반 거래</h3>
+            <p>일반 플레이어끼리의 카드 거래, 칩 거래, 0칩 양도에는 벌금이 없습니다.</p>
+          </article>
+          <article class="panel">
+            <h3>정보와 연합</h3>
+            <p>카드 정보 판매, 공동 조합 제안, 경매, 블러핑 모두 가능합니다.</p>
+          </article>
+          <article class="panel warning">
+            <h3>10분 제한</h3>
+            <p>협상과 조합 제출은 같은 10분 안에 끝내야 합니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="board">
+      <div class="wrap">
+        <h2>조합 제출</h2>
+        <p class="lead">딜 보드에 맞는 조합을 10분 안에 제출해야 보상을 받습니다. 한 라운드에 제출 기회는 단 1번뿐입니다.</p>
+        <div class="table-scroll">
+          <table class="dividend-table">
+            <thead>
+              <tr>
+                <th>명칭</th>
+                <th>조합 조건 / 예시</th>
+                <th>보상</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>플러시</td>
+                <td>
+                  <strong class="combo-rule">같은 무늬 카드 5장</strong>
+                  <span class="example-label">예시</span>
+                  <div class="portfolio-cards" aria-label="같은 무늬 5장">
+                    <div class="card heart" data-corner="A♥️">♥️A</div>
+                    <div class="card heart" data-corner="3♥️">♥️3</div>
+                    <div class="card heart" data-corner="5♥️">♥️5</div>
+                    <div class="card heart" data-corner="7♥️">♥️7</div>
+                    <div class="card heart" data-corner="9♥️">♥️9</div>
+                  </div>
+                  <span class="portfolio-note">하트, 스페이드, 클로버 중 한 무늬로 5장을 모으면 됩니다.</span>
+                </td>
+                <td><span class="reward">11</span></td>
+              </tr>
+              <tr>
+                <td>트리플</td>
+                <td>
+                  <strong class="combo-rule">같은 숫자 카드 3장</strong>
+                  <span class="example-label">예시</span>
+                  <div class="portfolio-cards" aria-label="같은 숫자의 스페이드 하트 클로버 3장">
+                    <div class="card spade" data-corner="7♠️">♠️7</div>
+                    <div class="card heart" data-corner="7♥️">♥️7</div>
+                    <div class="card club" data-corner="7♣️">♣️7</div>
+                  </div>
+                  <span class="portfolio-note">무늬는 달라도 됩니다. 숫자만 같으면 됩니다.</span>
+                </td>
+                <td><span class="reward">6</span></td>
+              </tr>
+              <tr>
+                <td>원 페어</td>
+                <td>
+                  <strong class="combo-rule">같은 숫자 카드 2장</strong>
+                  <span class="example-label">예시</span>
+                  <div class="portfolio-cards" aria-label="같은 숫자 2장">
+                    <div class="card heart" data-corner="5♥️">♥️5</div>
+                    <span class="plus">+</span>
+                    <div class="card spade" data-corner="5♠️">♠️5</div>
+                  </div>
+                  <span class="portfolio-note">가장 만들기 쉬운 기본 조합입니다.</span>
+                </td>
+                <td><span class="reward">2</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="joker">
+      <div class="wrap">
+        <h2>정체불명의 조커</h2>
+        <p class="lead">조커는 매 라운드 1명에게만 비밀리에 주어지는 특수 카드입니다.</p>
+        <div class="grid three">
+          <article class="panel ok">
+            <h3>권능</h3>
+            <p>조커 카드는 모든 무늬와 숫자를 대체합니다. 단, 조커 소유자만 사용할 수 있고 판매하거나 양도할 수 없습니다.</p>
+          </article>
+          <article class="panel warning">
+            <h3>비용</h3>
+            <p>조커 소유자는 조커 카드를 제출에 사용했는지와 관계없이 정산 때 무조건 5칩을 냅니다.</p>
+          </article>
+          <article class="panel">
+            <h3>비밀</h3>
+            <p>조커가 누구인지는 기밀장부로도 확인할 수 없습니다. 조커 거래 벌금은 정산 때 조커의 거래 내역을 기준으로 적용됩니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="penalty">
+      <div class="wrap">
+        <h2>검은 거래의 대가</h2>
+        <p class="lead">일반 플레이어끼리의 거래는 자유롭습니다. 하지만 거래 상대가 조커였다면 정산 때 벌금이 붙습니다.</p>
+        <div class="grid three">
+          <article class="panel ok">
+            <h3>일반 거래</h3>
+            <p>일반 플레이어끼리의 카드 거래, 칩 거래, 0칩 양도에는 벌금이 없습니다.</p>
+          </article>
+          <article class="panel warning">
+            <h3>칩 거래</h3>
+            <p>조커와 거래했다면 거래 금액의 2배를 벌금으로 냅니다.</p>
+          </article>
+          <article class="panel warning">
+            <h3>0칩 거래</h3>
+            <p>조커에게 0칩으로 카드를 받았다면 카드 1장당 3칩을 냅니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="tips">
+      <div class="wrap">
+        <h2>유용한 팁</h2>
+        <p class="lead">정보를 살 수 있고, 남은 카드는 비용이 됩니다. 필요한 카드는 찾고, 필요 없는 카드는 털어내십시오.</p>
+        <div class="grid three">
+          <article class="panel">
+            <h3>내부자 거래소</h3>
+            <p>2칩을 내면 특정 카드의 최초 지급자를 확인할 수 있습니다. 현재 소유자는 직접 추리해야 합니다.</p>
+          </article>
+          <article class="panel warning">
+            <h3>재고 벌금</h3>
+            <p>제출하지 못하고 손에 남은 카드는 장당 1칩입니다. 마감 전 최대한 털어내십시오.</p>
+          </article>
+          <article class="panel ok">
+            <h3>마감 전 제출</h3>
+            <p>10분 안에 제출한 조합만 보상을 받습니다. 손에 완성 조합이 있어도 미제출이면 0칩입니다.</p>
+          </article>
+        </div>
+        <p class="small-note">벌금이 보유 칩보다 크면 현재 칩은 마이너스로 기록됩니다.</p>
+      </div>
+    </section>
+
+    <section id="score">
+      <div class="wrap">
+        <h2>승리 조건</h2>
+        <p class="lead">3라운드 종료 후 최종 보유 칩이 가장 많은 플레이어가 승리합니다.</p>
+        <div class="grid three">
+          <article class="panel">
+            <div class="number">1</div>
+            <h3>최종 칩</h3>
+            <p>마지막 정산 후 보유 칩이 가장 많은 플레이어가 1위입니다.</p>
+          </article>
+          <article class="panel">
+            <div class="number">2</div>
+            <h3>동점 1순위</h3>
+            <p>3라운드 중 단일 라운드 조합 보상액이 가장 높은 플레이어가 앞섭니다.</p>
+          </article>
+          <article class="panel">
+            <div class="number">3</div>
+            <h3>동점 2순위</h3>
+            <p>최고 보상도 같다면 가장 낮았던 조합 보상액이 더 높은 플레이어가 앞섭니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="pager" aria-label="슬라이드 이동">
+    <button type="button" id="prev" aria-label="이전 슬라이드">↑</button>
+    <span id="count">1 / 10</span>
+    <button type="button" id="next" aria-label="다음 슬라이드">↓</button>
+  </div>
+
+  <script>
+    const sections = Array.from(document.querySelectorAll("main > section"));
+    const links = Array.from(document.querySelectorAll("nav a"));
+    const count = document.getElementById("count");
+    const main = document.getElementById("slides");
+
+    function currentIndex() {
+      const y = main.scrollTop;
+      let best = 0;
+      let bestDistance = Infinity;
+      sections.forEach((section, index) => {
+        const distance = Math.abs(section.offsetTop - y);
+        if (distance < bestDistance) {
+          best = index;
+          bestDistance = distance;
+        }
+      });
+      return best;
+    }
+
+    function updateNav() {
+      const index = currentIndex();
+      count.textContent = `${index + 1} / ${sections.length}`;
+      const id = sections[index].id;
+      links.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${id}`);
+      });
+    }
+
+    function go(delta) {
+      const index = Math.max(0, Math.min(sections.length - 1, currentIndex() + delta));
+      sections[index].scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    document.getElementById("prev").addEventListener("click", () => go(-1));
+    document.getElementById("next").addEventListener("click", () => go(1));
+    main.addEventListener("scroll", () => window.requestAnimationFrame(updateNav), { passive: true });
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowDown" || event.key === "PageDown" || event.key === " ") {
+        event.preventDefault();
+        go(1);
+      }
+      if (event.key === "ArrowUp" || event.key === "PageUp") {
+        event.preventDefault();
+        go(-1);
+      }
+    });
+    updateNav();
+  </script>
+</body>
+</html>
