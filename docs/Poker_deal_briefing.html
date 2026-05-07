@@ -478,7 +478,7 @@
       transform: rotate(180deg);
     }
 
-    .heart { color: #d22e42; }
+    .heart, .diamond { color: #d22e42; }
     .spade, .club { color: #111; }
     .joker {
       background: linear-gradient(145deg, #f7efe0, #d7aa45);
@@ -557,6 +557,61 @@
       font-weight: 900;
       line-height: 1.3;
       word-break: keep-all;
+    }
+
+    .card-library {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .suit-panel {
+      border: 1px solid rgba(215,170,69,0.28);
+      border-radius: 6px;
+      background: rgba(23,21,16,0.78);
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .suit-panel h3 {
+      margin: 0 0 14px;
+      color: var(--gold-2);
+      font-size: clamp(22px, 1.7vw, 30px);
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .mini-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .mini-cards .card {
+      width: 56px;
+      border-radius: 6px;
+      font-size: 19px;
+      box-shadow: 0 9px 22px rgba(0,0,0,0.3);
+    }
+
+    .mini-cards .card::before,
+    .mini-cards .card::after {
+      font-size: 10px;
+    }
+
+    .mini-cards .card::before {
+      top: 6px;
+      left: 6px;
+    }
+
+    .mini-cards .card::after {
+      right: 6px;
+      bottom: 6px;
+    }
+
+    .mini-cards .joker {
+      width: 70px;
+      font-size: 13px;
     }
 
     .stamp {
@@ -722,7 +777,7 @@
       body { overflow: auto; }
       main { scroll-snap-type: none; }
       section { min-height: auto; padding: 100px 0 48px; }
-      .hero-grid, .grid.two, .grid.three, .grid.five, .flow {
+      .hero-grid, .grid.two, .grid.three, .grid.five, .flow, .card-library {
         grid-template-columns: 1fr;
       }
       h1 { font-size: clamp(64px, 17vw, 118px); }
@@ -758,13 +813,13 @@
       </div>
       <nav aria-label="브리핑 목차">
         <a href="#intro">개요</a>
+        <a href="#cards">카드</a>
         <a href="#deal">분배</a>
         <a href="#negotiate">협상</a>
         <a href="#board">제출</a>
         <a href="#stock">재고</a>
         <a href="#joker">조커</a>
         <a href="#penalty">패널티</a>
-        <a href="#tips">팁</a>
         <a href="#score">승리</a>
       </nav>
     </div>
@@ -780,7 +835,7 @@
           <div class="meta-row">
             <span class="meta">15인 개인전</span>
             <span class="meta">3라운드</span>
-            <span class="meta">협상 및 제출 10분</span>
+            <span class="meta">협상 및 제출 3분</span>
             <span class="meta">최종 보유 칩 승리</span>
           </div>
         </div>
@@ -788,6 +843,86 @@
           <p class="banker-line">받은 카드는 시작일 뿐입니다.</p>
           <p class="quote">3라운드 종료 후 가장 많은 칩을 보유한 플레이어가 승리합니다.</p>
         </div>
+      </div>
+    </section>
+
+    <section id="cards">
+      <div class="wrap">
+        <h2>사용 카드</h2>
+        <p class="lead">포커 딜은 일반 카드 44장과 조커 1장, 총 45장을 모두 사용합니다.</p>
+        <div class="card-library" aria-label="사용 카드 전체 목록">
+          <article class="suit-panel">
+            <h3>스페이드 11장</h3>
+            <div class="mini-cards">
+              <div class="card spade" data-corner="A♠️">♠️A</div>
+              <div class="card spade" data-corner="2♠️">♠️2</div>
+              <div class="card spade" data-corner="3♠️">♠️3</div>
+              <div class="card spade" data-corner="4♠️">♠️4</div>
+              <div class="card spade" data-corner="5♠️">♠️5</div>
+              <div class="card spade" data-corner="6♠️">♠️6</div>
+              <div class="card spade" data-corner="7♠️">♠️7</div>
+              <div class="card spade" data-corner="8♠️">♠️8</div>
+              <div class="card spade" data-corner="9♠️">♠️9</div>
+              <div class="card spade" data-corner="10♠️">♠️10</div>
+              <div class="card spade" data-corner="J♠️">♠️J</div>
+            </div>
+          </article>
+          <article class="suit-panel">
+            <h3>하트 11장</h3>
+            <div class="mini-cards">
+              <div class="card heart" data-corner="A♥️">♥️A</div>
+              <div class="card heart" data-corner="2♥️">♥️2</div>
+              <div class="card heart" data-corner="3♥️">♥️3</div>
+              <div class="card heart" data-corner="4♥️">♥️4</div>
+              <div class="card heart" data-corner="5♥️">♥️5</div>
+              <div class="card heart" data-corner="6♥️">♥️6</div>
+              <div class="card heart" data-corner="7♥️">♥️7</div>
+              <div class="card heart" data-corner="8♥️">♥️8</div>
+              <div class="card heart" data-corner="9♥️">♥️9</div>
+              <div class="card heart" data-corner="10♥️">♥️10</div>
+              <div class="card heart" data-corner="J♥️">♥️J</div>
+            </div>
+          </article>
+          <article class="suit-panel">
+            <h3>클로버 11장</h3>
+            <div class="mini-cards">
+              <div class="card club" data-corner="A♣️">♣️A</div>
+              <div class="card club" data-corner="2♣️">♣️2</div>
+              <div class="card club" data-corner="3♣️">♣️3</div>
+              <div class="card club" data-corner="4♣️">♣️4</div>
+              <div class="card club" data-corner="5♣️">♣️5</div>
+              <div class="card club" data-corner="6♣️">♣️6</div>
+              <div class="card club" data-corner="7♣️">♣️7</div>
+              <div class="card club" data-corner="8♣️">♣️8</div>
+              <div class="card club" data-corner="9♣️">♣️9</div>
+              <div class="card club" data-corner="10♣️">♣️10</div>
+              <div class="card club" data-corner="J♣️">♣️J</div>
+            </div>
+          </article>
+          <article class="suit-panel">
+            <h3>다이아몬드 11장</h3>
+            <div class="mini-cards">
+              <div class="card diamond" data-corner="A♦️">♦️A</div>
+              <div class="card diamond" data-corner="2♦️">♦️2</div>
+              <div class="card diamond" data-corner="3♦️">♦️3</div>
+              <div class="card diamond" data-corner="4♦️">♦️4</div>
+              <div class="card diamond" data-corner="5♦️">♦️5</div>
+              <div class="card diamond" data-corner="6♦️">♦️6</div>
+              <div class="card diamond" data-corner="7♦️">♦️7</div>
+              <div class="card diamond" data-corner="8♦️">♦️8</div>
+              <div class="card diamond" data-corner="9♦️">♦️9</div>
+              <div class="card diamond" data-corner="10♦️">♦️10</div>
+              <div class="card diamond" data-corner="J♦️">♦️J</div>
+            </div>
+          </article>
+          <article class="suit-panel">
+            <h3>조커 1장</h3>
+            <div class="mini-cards">
+              <div class="card joker" data-corner="JOKER">JOKER</div>
+            </div>
+          </article>
+        </div>
+        <p class="small-note">Q와 K는 사용하지 않습니다. 각 일반 카드는 게임 안에 1장씩만 존재합니다.</p>
       </div>
     </section>
 
@@ -810,14 +945,15 @@
             <p>1라운드 시작 전 모든 플레이어는 기본 칩 5칩을 받습니다.</p>
           </article>
           <article class="panel">
-            <div class="deal-visual" aria-label="일반 카드 2장 예시">
+            <div class="deal-visual" aria-label="일반 카드 3장 예시">
               <div class="cards-row">
                 <div class="card spade" data-corner="7♠️">♠️7</div>
                 <div class="card heart" data-corner="4♥️">♥️4</div>
+                <div class="card diamond" data-corner="J♦️">♦️J</div>
               </div>
             </div>
             <h3>일반 플레이어</h3>
-            <p>매 라운드 모든 플레이어는 일반 카드 2장을 비공개로 받습니다.</p>
+            <p>매 라운드 모든 플레이어는 카드 3장을 비공개로 받습니다.</p>
           </article>
           <article class="panel warning">
             <div class="deal-visual" aria-label="비밀 조커 포함 3장 예시">
@@ -825,11 +961,11 @@
                 <div class="card club" data-corner="9♣️">♣️9</div>
                 <div class="card spade" data-corner="2♠️">♠️2</div>
                 <div class="card joker" data-corner="JOKER">JOKER</div>
-                <span class="secret-badge">비밀 2명</span>
+                <span class="secret-badge">비밀 1명</span>
               </div>
             </div>
-            <h3>조커 플레이어 2명</h3>
-            <p>무작위 2명은 조커 카드 1장을 추가로 받아 총 3장으로 시작합니다.</p>
+            <h3>조커 플레이어 1명</h3>
+            <p>조커 카드를 받은 1명은 그 라운드의 비밀 조커입니다.</p>
           </article>
         </div>
         <p class="small-note">2라운드부터는 라운드 시작 전에 유지비 1칩을 추가로 받습니다.</p>
@@ -839,19 +975,19 @@
     <section id="negotiate">
       <div class="wrap">
         <h2>자유 협상</h2>
-        <p class="lead">카드 분배 후 10분 동안 카드를 사고팔고, 정보를 거래하고, 연합을 만들 수 있습니다.</p>
+        <p class="lead">카드 분배 후 3분 동안 카드를 사고팔고, 정보를 거래하고, 연합을 만들 수 있습니다.</p>
         <div class="grid three">
           <article class="panel ok">
             <h3>일반 거래</h3>
-            <p>일반 플레이어끼리의 카드 거래, 칩 거래, 0칩 양도에는 패널티가 없습니다.</p>
+            <p>카드를 보여줄 의무는 없습니다. 말로 주장한 조건을 믿을지는 상대가 판단합니다.</p>
           </article>
           <article class="panel">
-            <h3>정보와 연합</h3>
-            <p>카드 정보 판매, 공동 조합 제안, 경매, 블러핑 모두 가능합니다.</p>
+            <h3>거래 필수</h3>
+            <p>모든 플레이어는 매 라운드 최소 1회 이상 거래해야 합니다. 0칩 카드 양도도 거래로 인정됩니다.</p>
           </article>
           <article class="panel warning">
-            <h3>10분 제한</h3>
-            <p>협상과 조합 제출은 같은 10분 안에 끝내야 합니다.</p>
+            <h3>3분 제한</h3>
+            <p>협상과 조합 제출은 같은 3분 안에 끝내야 합니다. 거래 0회면 보유 칩을 모두 회수당합니다.</p>
           </article>
         </div>
       </div>
@@ -860,7 +996,7 @@
     <section id="board">
       <div class="wrap">
         <h2>조합 제출</h2>
-        <p class="lead">딜 보드에 맞는 조합을 10분 안에 제출해야 보상을 받습니다. 한 라운드에 제출 기회는 단 1번뿐입니다.</p>
+        <p class="lead">딜 보드에 맞는 조합을 3분 안에 제출해야 보상을 받습니다. 한 라운드에 제출 기회는 단 1번뿐입니다.</p>
         <div class="table-scroll">
           <table class="dividend-table">
             <thead>
@@ -881,25 +1017,25 @@
                     <div class="card heart" data-corner="3♥️">♥️3</div>
                     <div class="card heart" data-corner="5♥️">♥️5</div>
                     <div class="card heart" data-corner="7♥️">♥️7</div>
-                    <div class="card heart" data-corner="9♥️">♥️9</div>
+                    <div class="card heart" data-corner="J♥️">♥️J</div>
                   </div>
-                  <span class="portfolio-note">하트, 스페이드, 클로버 중 한 무늬로 5장을 모으면 됩니다.</span>
+                  <span class="portfolio-note">하트, 스페이드, 클로버, 다이아몬드 중 한 무늬로 5장을 모으면 됩니다.</span>
                 </td>
-                <td><span class="reward">11</span></td>
+                <td><span class="reward">10</span></td>
               </tr>
               <tr>
                 <td>트리플</td>
                 <td>
                   <strong class="combo-rule">같은 숫자 카드 3장</strong>
                   <span class="example-label">예시</span>
-                  <div class="portfolio-cards" aria-label="같은 숫자의 스페이드 하트 클로버 3장">
+                  <div class="portfolio-cards" aria-label="같은 숫자의 스페이드 하트 다이아몬드 3장">
                     <div class="card spade" data-corner="7♠️">♠️7</div>
                     <div class="card heart" data-corner="7♥️">♥️7</div>
-                    <div class="card club" data-corner="7♣️">♣️7</div>
+                    <div class="card diamond" data-corner="7♦️">♦️7</div>
                   </div>
                   <span class="portfolio-note">무늬는 달라도 됩니다. 숫자만 같으면 됩니다.</span>
                 </td>
-                <td><span class="reward">6</span></td>
+                <td><span class="reward">5</span></td>
               </tr>
               <tr>
                 <td>원 페어</td>
@@ -917,6 +1053,7 @@
             </tbody>
           </table>
         </div>
+        <p class="small-note">라운드마다 가장 빠르게 유효한 조합을 제출한 1명은 최속 조합 보너스 5칩을 추가로 받습니다.</p>
       </div>
     </section>
 
@@ -942,7 +1079,7 @@
     <section id="joker">
       <div class="wrap">
         <h2>정체불명의 조커</h2>
-        <p class="lead">조커는 매 라운드 2명에게 비밀리에 주어지는 특수 카드입니다.</p>
+        <p class="lead">조커는 매 라운드 1명에게 비밀리에 주어지는 특수 카드입니다.</p>
         <div class="grid three">
           <article class="panel ok">
             <h3>권능</h3>
@@ -950,11 +1087,11 @@
           </article>
           <article class="panel warning">
             <h3>비용</h3>
-            <p>각 조커 소유자는 해당 라운드 정산 때 5칩을 추가로 냅니다.</p>
+            <p>조커 소유자는 해당 라운드 정산 때 5칩을 추가로 냅니다.</p>
           </article>
           <article class="panel">
             <h3>비밀</h3>
-            <p>조커가 누구인지는 기밀장부로도 확인할 수 없습니다. 조커 거래 패널티는 정산 때 조커 거래 메모지를 기준으로 적용됩니다.</p>
+            <p>조커의 정체는 정산 전까지 공개되지 않습니다. 조커 거래 패널티는 정산 때 조커 거래 메모지를 기준으로 적용됩니다.</p>
           </article>
         </div>
       </div>
@@ -969,26 +1106,9 @@
             <h3>조커 거래</h3>
             <p>거래 금액이나 카드 장수와 관계없이 거래 1건당 1칩을 조커에게 납부합니다.</p>
           </article>
-          <article class="panel ok">
-            <h3>조커끼리</h3>
-            <p>조커끼리의 거래에는 조커 거래 패널티가 없습니다.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="tips">
-      <div class="wrap">
-        <h2>유용한 팁</h2>
-        <p class="lead">정보를 사면 카드의 출발점을 찾을 수 있습니다. 하지만 현재 위치는 협상으로 직접 추리해야 합니다.</p>
-        <div class="grid two">
           <article class="panel">
-            <h3>기밀장부 조회</h3>
-            <p>2칩을 내면 특정 카드의 최초 지급자를 확인할 수 있습니다. 현재 소유자는 직접 추리해야 합니다.</p>
-          </article>
-          <article class="panel warning">
-            <h3>확인 불가 정보</h3>
-            <p>기밀장부로 조커가 누구인지는 확인할 수 없습니다.</p>
+            <h3>메모 기준</h3>
+            <p>조커 거래 패널티는 정산 때 조커 거래 메모지를 기준으로 적용됩니다.</p>
           </article>
         </div>
       </div>
@@ -1021,7 +1141,7 @@
 
   <div class="pager" aria-label="슬라이드 이동">
     <button type="button" id="prev" aria-label="이전 슬라이드">↑</button>
-    <span id="count">1 / 10</span>
+    <span id="count">1 / 9</span>
     <button type="button" id="next" aria-label="다음 슬라이드">↓</button>
   </div>
 
