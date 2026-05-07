@@ -250,11 +250,11 @@
     }
 
     .toast-inner.ok {
-      background: rgba(8,8,16,.92);
-      color: var(--gold-light);
-      border: 2px solid var(--gold-dim);
-      box-shadow: 0 0 40px rgba(201,168,76,.3), inset 0 0 30px rgba(201,168,76,.06);
-      text-shadow: 0 0 20px rgba(201,168,76,.6);
+      background: rgba(4,20,8,.94);
+      color: #6ee89a;
+      border: 2px solid #1a6b3a;
+      box-shadow: 0 0 40px rgba(40,180,90,.3), inset 0 0 30px rgba(40,180,90,.08);
+      text-shadow: 0 0 22px rgba(60,220,100,.65);
     }
 
     .toast-inner.ng {
@@ -345,6 +345,86 @@
       margin: 0 auto 3vh;
       position: relative;
     }
+
+    /* ── Board wrapper (board + countdown side panel) ── */
+    .board-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 3vw;
+      flex-shrink: 0;
+    }
+
+    /* ── Preview countdown panel ── */
+    .countdown-panel {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2vh;
+    }
+    .countdown-panel.show { display: flex; }
+
+    .countdown-label {
+      font-size: clamp(0.65rem, 1.4vh, 1.1rem);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+    }
+
+    .countdown-ring {
+      position: relative;
+      width: clamp(70px, 12vh, 130px);
+      height: clamp(70px, 12vh, 130px);
+    }
+
+    .countdown-ring svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .countdown-ring .ring-track {
+      fill: none;
+      stroke: rgba(201,168,76,.12);
+      stroke-width: 4;
+    }
+
+    .countdown-ring .ring-fill {
+      fill: none;
+      stroke: var(--gold);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 283;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear, stroke .4s;
+      filter: drop-shadow(0 0 6px rgba(201,168,76,.5));
+    }
+
+    .countdown-ring .ring-fill.urgent {
+      stroke: #e57373;
+      filter: drop-shadow(0 0 6px rgba(229,115,115,.6));
+    }
+
+    .countdown-num {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1.8rem, 5vh, 4.2rem);
+      font-weight: 900;
+      color: var(--gold-light);
+      text-shadow: 0 0 16px rgba(201,168,76,.5);
+      transition: color .4s;
+    }
+
+    .countdown-num.urgent { color: #ef9a9a; text-shadow: 0 0 16px rgba(229,115,115,.6); }
+
+    .countdown-sub {
+      font-size: clamp(0.6rem, 1.2vh, 0.95rem);
+      color: var(--gold-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
   </style>
 </head>
 <body>
@@ -359,7 +439,21 @@
   <button class="btn" id="restart-btn">New Game</button>
 </div>
 
-<div class="board" id="board"></div>
+<div class="board-wrapper">
+  <div class="board" id="board"></div>
+
+  <div class="countdown-panel" id="countdown-panel">
+    <div class="countdown-label">Memorize</div>
+    <div class="countdown-ring">
+      <svg viewBox="0 0 100 100">
+        <circle class="ring-track" cx="50" cy="50" r="45"/>
+        <circle class="ring-fill" id="ring-fill" cx="50" cy="50" r="45"/>
+      </svg>
+      <div class="countdown-num" id="countdown-num">10</div>
+    </div>
+    <div class="countdown-sub">seconds</div>
+  </div>
+</div>
 
 <div class="toast">
   <div class="toast-inner" id="toast-inner"></div>
@@ -405,7 +499,53 @@ function buildCardTypes() {
 }
 
 let deck = [], flipped = [], matched = 0, tries = 0, locked = false;
-let timerSec = 0, timerRef = null, toastTimer = null;
+let timerSec = 0, timerRef = null, toastTimer = null, previewRef = null;
+
+const PREVIEW_SEC = 10;
+const CIRCUMFERENCE = 283; // 2π × r(45) ≈ 283
+
+function startPreview() {
+  locked = true;
+
+  // flip all cards face-up instantly (no transition during reveal)
+  document.querySelectorAll('.card-wrap').forEach(w => w.classList.add('flipped'));
+
+  const panel   = document.getElementById('countdown-panel');
+  const numEl   = document.getElementById('countdown-num');
+  const ringEl  = document.getElementById('ring-fill');
+  panel.classList.add('show');
+
+  let remaining = PREVIEW_SEC;
+
+  function tick() {
+    const urgent = remaining <= 3;
+    numEl.textContent = remaining;
+    numEl.className   = 'countdown-num' + (urgent ? ' urgent' : '');
+    ringEl.className  = 'ring-fill'     + (urgent ? ' urgent' : '');
+    // dashoffset: full circle = 0 remaining, empty = CIRCUMFERENCE
+    ringEl.style.strokeDashoffset = CIRCUMFERENCE * (1 - remaining / PREVIEW_SEC);
+  }
+
+  tick();
+
+  previewRef = setInterval(() => {
+    remaining--;
+    tick();
+
+    if (remaining <= 0) {
+      clearInterval(previewRef);
+      previewRef = null;
+
+      // brief pause at 0 then flip all back
+      setTimeout(() => {
+        panel.classList.remove('show');
+        document.querySelectorAll('.card-wrap').forEach(w => w.classList.remove('flipped'));
+        // wait for flip-back animation then unlock
+        setTimeout(() => { locked = false; startTimer(); }, 480);
+      }, 600);
+    }
+  }, 1000);
+}
 
 function showToast(text, type, ms = 900) {
   const inner = document.getElementById('toast-inner');
@@ -525,9 +665,15 @@ function showWin() {
 }
 
 function startGame() {
+  // cancel any running preview
+  if (previewRef) { clearInterval(previewRef); previewRef = null; }
+  document.getElementById('countdown-panel').classList.remove('show');
+
   document.getElementById('overlay').classList.remove('show');
+  stopTimer();
   matched = 0; tries = 0; flipped = []; locked = false;
   updateStats();
+  document.getElementById('timer').textContent = 0;
 
   const types = buildCardTypes();
   let cards = [];
@@ -540,7 +686,7 @@ function startGame() {
   deck = cards.map((c, i) => ({ ...c, idx: i, num: i + 1 }));
 
   renderBoard();
-  startTimer();
+  startPreview(); // show all cards for 10s, then flip back and start timer
 }
 
 document.getElementById('restart-btn').addEventListener('click', startGame);
