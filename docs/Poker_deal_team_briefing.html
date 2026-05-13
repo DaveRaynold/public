@@ -480,6 +480,32 @@
 
     .heart, .diamond { color: #d22e42; }
     .spade, .club { color: #111; }
+    .card.back {
+      overflow: hidden;
+      border: 4px solid #f8f2e6;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.18) 0 2px, transparent 2px 12px),
+        linear-gradient(45deg, rgba(255,255,255,0.14) 0 2px, transparent 2px 12px),
+        linear-gradient(145deg, #7c1f2b, #2b1014);
+      background-size: 16px 16px, 16px 16px, auto;
+      color: #f8f2e6;
+    }
+
+    .card.back::before {
+      content: "";
+      inset: 9px;
+      border: 2px solid rgba(248,242,230,0.72);
+      border-radius: 5px;
+    }
+
+    .card.back::after {
+      content: "";
+      inset: 18px;
+      border: 1px solid rgba(248,242,230,0.46);
+      border-radius: 4px;
+      transform: none;
+    }
+
     .joker {
       background: linear-gradient(145deg, #f7efe0, #d7aa45);
       color: #15120b;
@@ -559,6 +585,38 @@
       word-break: keep-all;
     }
 
+    .team-chip-note {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-top: 34px;
+      padding-left: 27px;
+      min-height: 54px;
+      overflow: visible;
+    }
+
+    .team-chip-note .chip {
+      width: 42px;
+      height: 42px;
+      border-width: 4px;
+      flex: 0 0 auto;
+      margin-left: -21px;
+    }
+
+    .team-chip-note .chip:first-child {
+      margin-left: 0;
+    }
+
+    .chip-count-label {
+      margin-left: 10px;
+      color: var(--gold-2);
+      font-family: var(--mono);
+      font-size: clamp(18px, 1.3vw, 24px);
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
     .card-library {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -569,7 +627,8 @@
       border: 1px solid rgba(215,170,69,0.28);
       border-radius: 6px;
       background: rgba(23,21,16,0.78);
-      padding: 18px;
+      padding: 18px 18px 28px;
+      min-height: 178px;
       min-width: 0;
     }
 
@@ -584,7 +643,8 @@
     .mini-cards {
       display: flex;
       flex-wrap: wrap;
-      gap: 7px;
+      column-gap: 7px;
+      row-gap: 26px;
     }
 
     .mini-cards .card {
@@ -607,6 +667,33 @@
     .mini-cards .card::after {
       right: 6px;
       bottom: 6px;
+    }
+
+    .unique-card {
+      outline: 3px solid rgba(255,230,150,0.96);
+      outline-offset: 2px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.82),
+        0 0 18px rgba(255,218,107,0.74),
+        0 9px 22px rgba(0,0,0,0.3);
+    }
+
+    .card-badge {
+      position: absolute;
+      left: 50%;
+      bottom: -20px;
+      transform: translateX(-50%);
+      border: 1px solid rgba(255,230,150,0.92);
+      border-radius: 999px;
+      padding: 2px 7px;
+      background: rgba(255,230,150,0.16);
+      color: #ffe696;
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+      text-transform: uppercase;
     }
 
     .mini-cards .joker {
@@ -813,13 +900,11 @@
       </div>
       <nav aria-label="브리핑 목차">
         <a href="#intro">개요</a>
-        <a href="#cards">카드</a>
-        <a href="#deal">분배</a>
-        <a href="#joker-role">팀 카드</a>
+        <a href="#cards">팀 지급</a>
+        <a href="#deal">개인 분배</a>
         <a href="#dealboard">조합표</a>
-        <a href="#negotiate">협상</a>
-        <a href="#board">제출</a>
-        <a href="#penalty">패널티</a>
+        <a href="#negotiate">거래/제출</a>
+        <a href="#penalty">제약/패널티</a>
         <a href="#settlement">정산</a>
         <a href="#score">승리</a>
       </nav>
@@ -837,7 +922,7 @@
             <span class="meta">15명 / 3팀</span>
             <span class="meta">3라운드</span>
             <span class="meta">카드 확인 5분</span>
-            <span class="meta">10분 → 7분 → 5분</span>
+            <span class="meta">각 라운드 10분</span>
             <span class="meta">1인 최대 2회 거래</span>
             <span class="meta">팀 총 칩 승리</span>
           </div>
@@ -851,115 +936,88 @@
 
     <section id="cards">
       <div class="wrap">
-        <h2>사용 카드</h2>
-        <p class="lead">포커 딜은 스페이드, 하트, 클로버 A부터 10까지 총 30장을 사용합니다.</p>
-        <div class="card-library" aria-label="사용 카드 전체 목록">
+        <h2>팀별 지급</h2>
+        <p class="lead">각 팀은 자기 팀 무늬 카드 10장과 시작 칩 25개를 받습니다.</p>
+        <div class="card-library" aria-label="팀별 지급 카드 전체 목록">
           <article class="suit-panel">
-            <h3>스페이드팀 10장</h3>
+            <h3>스페이드팀 카드 10장</h3>
             <div class="mini-cards">
-              <div class="card spade" data-corner="A♠️">♠️A</div>
-              <div class="card spade" data-corner="2♠️">♠️2</div>
-              <div class="card spade" data-corner="3♠️">♠️3</div>
-              <div class="card spade" data-corner="4♠️">♠️4</div>
-              <div class="card spade" data-corner="5♠️">♠️5</div>
+              <div class="card spade unique-card" data-corner="A♠️">♠️A<span class="card-badge">fix</span></div>
+              <div class="card spade unique-card" data-corner="2♠️">♠️2<span class="card-badge">fix</span></div>
+              <div class="card spade unique-card" data-corner="3♠️">♠️3<span class="card-badge">fix</span></div>
+              <div class="card spade unique-card" data-corner="4♠️">♠️4<span class="card-badge">fix</span></div>
+              <div class="card spade unique-card" data-corner="5♠️">♠️5<span class="card-badge">fix</span></div>
               <div class="card spade" data-corner="6♠️">♠️6</div>
               <div class="card spade" data-corner="7♠️">♠️7</div>
               <div class="card spade" data-corner="8♠️">♠️8</div>
               <div class="card spade" data-corner="9♠️">♠️9</div>
               <div class="card spade" data-corner="10♠️">♠️10</div>
             </div>
+            <p class="portfolio-note team-chip-note" aria-label="팀 시작 칩 25개"><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip-count-label">(25칩)</span></p>
           </article>
           <article class="suit-panel">
-            <h3>하트팀 10장</h3>
+            <h3>하트팀 카드 10장</h3>
             <div class="mini-cards">
-              <div class="card heart" data-corner="A♥️">♥️A</div>
-              <div class="card heart" data-corner="2♥️">♥️2</div>
-              <div class="card heart" data-corner="3♥️">♥️3</div>
-              <div class="card heart" data-corner="4♥️">♥️4</div>
-              <div class="card heart" data-corner="5♥️">♥️5</div>
+              <div class="card heart unique-card" data-corner="A♥️">♥️A<span class="card-badge">fix</span></div>
+              <div class="card heart unique-card" data-corner="2♥️">♥️2<span class="card-badge">fix</span></div>
+              <div class="card heart unique-card" data-corner="3♥️">♥️3<span class="card-badge">fix</span></div>
+              <div class="card heart unique-card" data-corner="4♥️">♥️4<span class="card-badge">fix</span></div>
+              <div class="card heart unique-card" data-corner="5♥️">♥️5<span class="card-badge">fix</span></div>
               <div class="card heart" data-corner="6♥️">♥️6</div>
               <div class="card heart" data-corner="7♥️">♥️7</div>
               <div class="card heart" data-corner="8♥️">♥️8</div>
               <div class="card heart" data-corner="9♥️">♥️9</div>
               <div class="card heart" data-corner="10♥️">♥️10</div>
             </div>
+            <p class="portfolio-note team-chip-note" aria-label="팀 시작 칩 25개"><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip-count-label">(25칩)</span></p>
           </article>
           <article class="suit-panel">
-            <h3>클로버팀 10장</h3>
+            <h3>클로버팀 카드 10장</h3>
             <div class="mini-cards">
-              <div class="card club" data-corner="A♣️">♣️A</div>
-              <div class="card club" data-corner="2♣️">♣️2</div>
-              <div class="card club" data-corner="3♣️">♣️3</div>
-              <div class="card club" data-corner="4♣️">♣️4</div>
-              <div class="card club" data-corner="5♣️">♣️5</div>
+              <div class="card club unique-card" data-corner="A♣️">♣️A<span class="card-badge">fix</span></div>
+              <div class="card club unique-card" data-corner="2♣️">♣️2<span class="card-badge">fix</span></div>
+              <div class="card club unique-card" data-corner="3♣️">♣️3<span class="card-badge">fix</span></div>
+              <div class="card club unique-card" data-corner="4♣️">♣️4<span class="card-badge">fix</span></div>
+              <div class="card club unique-card" data-corner="5♣️">♣️5<span class="card-badge">fix</span></div>
               <div class="card club" data-corner="6♣️">♣️6</div>
               <div class="card club" data-corner="7♣️">♣️7</div>
               <div class="card club" data-corner="8♣️">♣️8</div>
               <div class="card club" data-corner="9♣️">♣️9</div>
               <div class="card club" data-corner="10♣️">♣️10</div>
             </div>
+            <p class="portfolio-note team-chip-note" aria-label="팀 시작 칩 25개"><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip blue"></span><span class="chip-count-label">(25칩)</span></p>
           </article>
         </div>
-        <p class="small-note">다이아몬드, J, Q, K, 조커는 사용하지 않습니다. 각 카드는 게임 안에 1장씩만 존재합니다.</p>
+        <p class="small-note">A(1)~5는 처음 배정된 플레이어의 고유 카드입니다. 라운드 중 거래할 수 있지만 라운드가 끝나면 원래 소유자에게 돌아갑니다. 6~10은 각 팀이 내부에서 누가 어떤 카드를 가질지 정해 나누어 갖습니다. 다이아몬드, J, Q, K, 조커는 사용하지 않습니다. 각 카드는 게임 안에 1장씩만 존재합니다.</p>
       </div>
     </section>
 
     <section id="deal">
       <div class="wrap">
-        <h2>카드 분배</h2>
-        <p class="lead">1장의 공개 고유 카드와 비공개 카드 1장으로 게임을 시작합니다.</p>
-        <div class="grid three">
+        <h2>개인별 분배</h2>
+        <p class="lead">각 플레이어는 팀 지급분에서 칩 5개와 카드 2장을 받습니다.</p>
+        <div class="grid two">
           <article class="panel ok">
-            <div class="deal-visual" aria-label="팀 시작 칩 25개">
+            <div class="deal-visual" aria-label="개인 시작 칩 5개">
               <div class="chip-row">
                 <span class="chip blue"> </span><span class="chip blue"> </span><span class="chip blue"> </span><span class="chip blue"> </span><span class="chip blue"> </span>
               </div>
             </div>
-            <h3>칩 5개</h3>
+            <h3>개인 칩 5개</h3>
             <p>1인당 5개의 칩으로 시작합니다.</p>
           </article>
-          <article class="panel">
-            <div class="deal-visual" aria-label="공개 고유 카드 예시">
+          <article class="panel warning">
+            <div class="deal-visual" aria-label="공개 고유 카드 1장과 뒤집힌 비공개 카드 1장 예시">
               <div class="cards-row">
                 <div class="card heart" data-corner="A♥️">♥️A</div>
+                <div class="card back" aria-label="뒤집힌 비공개 카드"></div>
               </div>
             </div>
-            <h3>공개 고유 카드 1장</h3>
-            <p>각 플레이어는 자기 팀 무늬의 A~5 중 한 장을 맡습니다.</p>
-          </article>
-          <article class="panel warning">
-            <div class="deal-visual" aria-label="팀 비공개 카드 예시">
-              <div class="cards-row">
-                <div class="card heart" data-corner="6♥️">♥️6</div>
-              </div>
-            </div>
-            <h3>비공개 카드 1장</h3>
-            <p>자기 팀 무늬 6~10 다섯 장을 받고, 누가 어떤 카드를 맡을지는 팀 내부에서 정합니다.</p>
+            <h3>개인 카드 2장</h3>
+            <p>각 플레이어는 공개된 고유 카드 1장과 비공개 카드 1장을 함께 받습니다. 고유 카드는 라운드가 끝나면 원래 소유자에게 돌아가고, 비공개 카드는 6~10 중 팀 내부에서 정한 한 장입니다.</p>
           </article>
         </div>
         <p class="small-note">공개 고유 카드는 하트팀 ♥️A~♥️5, 클로버팀 ♣️A~♣️5, 스페이드팀 ♠️A~♠️5입니다. 비공개 카드는 팀원끼리만 공유합니다.</p>
-      </div>
-    </section>
-
-    <section id="joker-role">
-      <div class="wrap">
-        <h2>팀 카드 구조</h2>
-        <p class="lead">A~5는 공개 정보, 6~10은 팀 비공개 정보입니다.</p>
-        <div class="grid three">
-          <article class="panel warning">
-            <h3>하트팀</h3>
-            <p>공개 카드는 ♥️A~♥️5, 비공개 카드는 ♥️6~♥️10입니다.</p>
-          </article>
-          <article class="panel ok">
-            <h3>클로버팀</h3>
-            <p>공개 카드는 ♣️A~♣️5, 비공개 카드는 ♣️6~♣️10입니다.</p>
-          </article>
-          <article class="panel">
-            <h3>스페이드팀</h3>
-            <p>공개 카드는 ♠️A~♠️5, 비공개 카드는 ♠️6~♠️10입니다.</p>
-          </article>
-        </div>
-        <p class="small-note">공개 고유 카드도 거래할 수 있습니다. 다만 다른 팀으로 넘어간 뒤에는 계속 공개 상태를 유지하지 않아도 됩니다.</p>
       </div>
     </section>
 
@@ -989,7 +1047,7 @@
                   </div>
                   <span class="portfolio-note">무늬는 달라도 됩니다. 숫자만 같으면 됩니다.</span>
                 </td>
-                <td><span class="reward">4</span></td>
+                <td><span class="reward">7</span></td>
               </tr>
               <tr>
                 <td>원 페어</td>
@@ -1013,67 +1071,61 @@
 
     <section id="negotiate">
       <div class="wrap">
-        <h2>자유 협상</h2>
-        <p class="lead">거래는 반드시 다른 팀과만 할 수 있고, 모든 공식 거래는 거래소에서 처리합니다.</p>
+        <h2>거래와 제출</h2>
+        <p class="lead">거래, 협상, 개인 제출은 모두 라운드 10분 안에서 진행합니다.</p>
         <div class="grid two">
           <article class="panel ok">
             <h3>제한 시간</h3>
-            <p>협상, 거래, 제출 시간은 1라운드 10분, 2라운드 7분, 3라운드 5분입니다.</p>
+            <p>협상, 거래, 제출 시간은 모든 라운드 10분입니다. 10분이 지나면 제출은 인정되지 않습니다.</p>
           </article>
           <article class="panel ok">
             <h3>거래소</h3>
-            <p>실물 카드 거래는 두 사람이 함께 거래소로 가서 처리해야 공식 거래로 인정됩니다.</p>
+            <p>거래는 두 사람이 함께 거래소로 가서 진행자 앞에서 처리해야 인정됩니다. 1:1 거래만 허용합니다.</p>
           </article>
           <article class="panel">
-            <h3>최대 2회, 장수 제한 없음</h3>
-            <p>각 플레이어의 실물 거래는 라운드당 최대 2회입니다. 한 번의 거래에서 주고받는 카드 장수와 칩 개수에는 제한이 없습니다.</p>
+            <h3>1라운드당 최대 2회</h3>
+            <p>각 플레이어의 실물 거래는 라운드당 최대 2회입니다. 두 사람이 함께 거래소에서 한 번 처리하면 거래 내용과 관계없이 두 사람 모두 거래 1회로 기록합니다. 고유 카드와 비공개 카드는 모두 거래할 수 있고, 한 번의 거래에서 카드 1장을 팔거나 살 수 있습니다.</p>
           </article>
-          <article class="panel warning">
-            <h3>같은 팀 거래 금지</h3>
-            <p>같은 팀원끼리는 카드 정보를 공유할 수 있지만, 공식 거래는 할 수 없습니다.</p>
-          </article>
-        </div>
-        <p class="small-note">카드를 보여줄 의무는 없습니다. 카드 이름과 조건은 말로 주장할 수 있고, 실제 카드나 칩이 넘어간 뒤에는 거래를 무를 수 없습니다.</p>
-      </div>
-    </section>
-
-    <section id="board">
-      <div class="wrap">
-        <h2>조합 제출</h2>
-        <p class="lead">한 라운드에 제출 기회는 단 1번뿐입니다.</p>
-        <div class="grid two">
-          <article class="panel warning">
-            <h3>자기 손패로 제출</h3>
-            <p>각 플레이어는 현재 자기 손에 들고 있는 카드만으로 조합을 제출합니다. 같은 팀원 카드와 합쳐서 제출할 수 없습니다.</p>
-          </article>
-          <article class="panel ok">
-            <h3>조합은 하나만</h3>
-            <p>트리플이든 원 페어든 둘 중 하나만 선택해서 제출해야 합니다.</p>
+          <article class="panel">
+            <h3>개인 제출</h3>
+            <p>각 플레이어는 현재 자기가 가지고 있는 카드들 중에서 조합을 만들고, 만들 수 있는 조합들 중 1개의 조합만 선택해 제출할 수 있습니다.</p>
           </article>
         </div>
-        <p class="small-note">제출과 거래는 같은 제한 시간 안에서 진행됩니다. 제출만 따로 받는 추가 시간은 없습니다.</p>
+        <p class="small-note">칩은 카드와 함께 주고받을 수 있으며 개수 제한은 없습니다. 카드를 보여줄 의무는 없습니다. 카드 이름과 조건은 말로 주장할 수 있고, 실제 카드나 칩이 넘어간 뒤에는 거래를 무를 수 없습니다.</p>
       </div>
     </section>
 
     <section id="penalty">
       <div class="wrap">
-        <h2>패널티</h2>
-        <p class="lead">기본 패널티는 두 가지입니다.</p>
+        <h2>제약과 패널티</h2>
+        <p class="lead">같은 팀 거래와 팀원 카드 합산 제출은 금지입니다. 거래를 해도 조합을 제출하지 못하면 -1칩입니다.</p>
         <div class="grid three">
           <article class="panel warning">
+            <h3>같은 팀 거래 금지</h3>
+            <p>같은 팀원끼리는 카드 정보를 공유할 수 있지만, 거래는 할 수 없습니다.</p>
+          </article>
+          <article class="panel warning">
+            <h3>팀원 카드 합산 금지</h3>
+            <p>조합 제출은 현재 자기 카드로만 합니다. 같은 팀원 카드와 합쳐서 제출할 수 없습니다.</p>
+          </article>
+          <article class="panel warning">
+            <h3>강제 확인 금지</h3>
+            <p>다른 팀 카드를 강제로 보거나 빼앗을 수 없습니다.</p>
+          </article>
+          <article class="panel warning">
             <h3>거래 0회</h3>
-            <p>공식 거래를 한 번도 하지 못하면 -2칩 패널티</p>
+            <p>거래를 한 번도 하지 못하면 -2칩 패널티</p>
           </article>
           <article class="panel">
-            <h3>조합 미완성</h3>
-            <p>마감 전까지 유효한 조합을 제출하지 못하면 -2칩 패널티</p>
+            <h3>조합 미제출</h3>
+            <p>마감 전까지 유효한 조합을 제출하지 못하면 -1칩 패널티</p>
           </article>
           <article class="panel ok">
-            <h3>둘 다 적용 가능</h3>
-            <p>거래를 안 했고 제출도 못 했다면 두 패널티가 함께 적용됩니다.</p>
+            <h3>둘 다 적용</h3>
+            <p>카드 거래를 하지 않았고 조합도 제출하지 못했다면 두 패널티가 함께 적용되어 -3칩입니다.</p>
           </article>
         </div>
-        <p class="small-note">예를 들어 거래 0회와 조합 미완성을 동시에 만족하면 그 라운드에 -4칩이 반영됩니다.</p>
+        <p class="small-note">카드 거래를 1회 이상 했더라도 조합을 제출하지 못하면 -1칩이 반영됩니다.</p>
       </div>
     </section>
 
@@ -1086,22 +1138,22 @@
             <h3>팀 라운드 순이익</h3>
             <ul>
               <li>팀원 5명의 제출 보상 총합</li>
-              <li>팀원 5명의 조합 미완성 패널티 총합 차감</li>
+              <li>팀원 5명의 조합 미제출 패널티 총합 차감</li>
               <li>팀원 5명의 거래 0회 패널티 총합 차감</li>
             </ul>
           </article>
           <article class="panel warning">
             <h3>정산 예시</h3>
             <ul>
-              <li>P1 트리플 = 4칩</li>
+              <li>P1 트리플 = 7칩</li>
               <li>P2 원 페어 = 2칩</li>
-              <li>P3 제출 없음, 거래 0회 = -4칩</li>
+              <li>P3 제출 없음, 거래 0회 = -3칩</li>
               <li>P4 원 페어 = 2칩</li>
-              <li>P5 제출 없음 = -2칩</li>
+              <li>P5 제출 없음, 카드 거래 1회 = -1칩</li>
             </ul>
           </article>
         </div>
-        <p class="small-note">위 예시라면 해당 팀의 라운드 순이익은 2칩입니다.</p>
+        <p class="small-note">위 예시라면 해당 팀의 라운드 순이익은 7칩입니다. 정산 결과 팀 총 칩이 0칩 아래로 내려가면 음수 칩으로 기록합니다.</p>
       </div>
     </section>
 
