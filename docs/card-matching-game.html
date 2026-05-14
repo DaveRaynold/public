@@ -45,15 +45,16 @@
     /* ── Header ──────────────────────────────────────────── */
     .header {
       width: 100%;
-      max-width: calc(var(--card-w) * 6 + var(--gap) * 5);
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       gap: 2vw;
       flex-shrink: 0;
       border-bottom: 1px solid var(--border-subtle);
       padding-bottom: 1vh;
     }
+
+    .header > h1 { text-align: center; }
 
     h1 {
       font-size: clamp(1rem, 2.6vh, 2.2rem);
@@ -81,7 +82,16 @@
     }
 
     .stats .label { color: var(--gold-dim); font-size: .8em; text-transform: uppercase; margin-right: .3em; }
-    .stats b { color: var(--gold-light); font-weight: 700; }
+    .stats b {
+      color: var(--gold-light);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      display: inline-block;
+      text-align: right;
+    }
+    .stats #timer { min-width: 3ch; }
+    .stats #tries { min-width: 2ch; }
+    .stats #pairs { min-width: 2ch; }
 
     /* ── Button ──────────────────────────────────────────── */
     .btn {
@@ -346,13 +356,143 @@
       position: relative;
     }
 
-    /* ── Board wrapper (board + countdown side panel) ── */
-    .board-wrapper {
+    /* ── Header left: Teams + New Game (horizontal) ── */
+    .header-left {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 1.5vw;
+    }
+
+    .team-selector {
       display: flex;
       align-items: center;
-      gap: 3vw;
+      gap: 4px;
+    }
+
+    .team-selector-label {
+      font-size: clamp(0.6rem, 1.2vh, 0.95rem);
+      letter-spacing: 2px;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-right: 6px;
+    }
+
+    .team-btn {
+      padding: 0.3vh 0;
+      font-size: clamp(0.7rem, 1.5vh, 1.1rem);
+      font-weight: 700;
+      background: transparent;
+      color: var(--gold-dim);
+      border: 1px solid var(--gold-dim);
+      border-radius: 3px;
+      cursor: pointer;
+      width: clamp(22px, 3vh, 32px);
+      transition: all .15s;
+      line-height: 1;
+    }
+
+    .team-btn:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .team-btn.active {
+      background: var(--gold);
+      color: #06060e;
+      border-color: var(--gold);
+    }
+
+    /* ── Board wrapper (board + side panels) ── */
+    .board-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
     }
+
+    /* Side stack floats to the right of the board without affecting centering */
+    .side-stack {
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-left: 2vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5vh;
+    }
+
+    /* ── Team score panel (right of board) ── */
+    .team-panel {
+      display: none;
+      flex-direction: column;
+      gap: 1vh;
+      min-width: clamp(110px, 13vh, 170px);
+    }
+    .team-panel.show { display: flex; }
+
+    .team-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--team-color, var(--gold-dim));
+      padding: 0.9vh 1vw;
+      border-radius: 4px;
+      transition: all .25s ease;
+      opacity: .55;
+    }
+
+    .team-card.active {
+      opacity: 1;
+      background: rgba(255,255,255,.05);
+      box-shadow: 0 0 18px color-mix(in srgb, var(--team-color, #c9a84c) 35%, transparent),
+                  inset 0 0 14px color-mix(in srgb, var(--team-color, #c9a84c) 8%, transparent);
+    }
+
+    .team-card-label {
+      font-size: clamp(0.6rem, 1.2vh, 0.95rem);
+      letter-spacing: 2px;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+    }
+
+    .team-card.active .team-card-label {
+      color: var(--team-color, var(--gold));
+    }
+
+    .team-card-score {
+      font-size: clamp(1.4rem, 3.6vh, 2.8rem);
+      font-weight: 900;
+      color: var(--gold-light);
+      line-height: 1;
+      margin-top: 0.2vh;
+    }
+
+    .team-card.active .team-card-score {
+      color: var(--team-color, var(--gold-light));
+      text-shadow: 0 0 14px color-mix(in srgb, var(--team-color, #c9a84c) 45%, transparent);
+    }
+
+    /* ── Win rankings ── */
+    .ranks { margin-bottom: 2.5vh; }
+    .rank-row {
+      display: grid;
+      grid-template-columns: 4ch 1fr auto;
+      align-items: center;
+      gap: 2vw;
+      padding: 0.8vh 1vw;
+      font-size: clamp(0.95rem, 2.2vh, 1.8rem);
+      border-bottom: 1px solid rgba(201,168,76,.12);
+      letter-spacing: 1px;
+    }
+    .rank-row:last-child { border-bottom: none; }
+    .rank-row .medal     { font-size: 1.1em; text-align: left; }
+    .rank-row .team-name { color: var(--gold-light); text-align: left; font-weight: 700; }
+    .rank-row .team-pairs{ color: var(--gold); font-weight: 900; }
+    .rank-row.winner     { background: rgba(201,168,76,.08); }
+    .rank-row.winner .team-name { color: var(--gold); }
 
     /* ── Preview countdown panel ── */
     .countdown-panel {
@@ -430,28 +570,44 @@
 <body>
 
 <div class="header">
+  <div class="header-left">
+    <div class="team-selector" id="team-selector">
+      <span class="team-selector-label">Teams</span>
+      <button class="team-btn active" data-team="1">1</button>
+      <button class="team-btn" data-team="2">2</button>
+      <button class="team-btn" data-team="3">3</button>
+      <button class="team-btn" data-team="4">4</button>
+      <button class="team-btn" data-team="5">5</button>
+    </div>
+    <button class="btn" id="restart-btn">New Game</button>
+  </div>
+
   <h1>🂡 The Genius · Card Match</h1>
+
   <div class="stats">
     <span><span class="label">Pairs</span><b id="pairs">0</b> / 15</span>
     <span><span class="label">Tries</span><b id="tries">0</b></span>
     <span><span class="label">Time</span><b id="timer">0</b>s</span>
   </div>
-  <button class="btn" id="restart-btn">New Game</button>
 </div>
 
 <div class="board-wrapper">
   <div class="board" id="board"></div>
 
-  <div class="countdown-panel" id="countdown-panel">
-    <div class="countdown-label">Memorize</div>
-    <div class="countdown-ring">
-      <svg viewBox="0 0 100 100">
-        <circle class="ring-track" cx="50" cy="50" r="45"/>
-        <circle class="ring-fill" id="ring-fill" cx="50" cy="50" r="45"/>
-      </svg>
-      <div class="countdown-num" id="countdown-num">10</div>
+  <div class="side-stack">
+    <div class="countdown-panel" id="countdown-panel">
+      <div class="countdown-label">Memorize</div>
+      <div class="countdown-ring">
+        <svg viewBox="0 0 100 100">
+          <circle class="ring-track" cx="50" cy="50" r="45"/>
+          <circle class="ring-fill" id="ring-fill" cx="50" cy="50" r="45"/>
+        </svg>
+        <div class="countdown-num" id="countdown-num">10</div>
+      </div>
+      <div class="countdown-sub">seconds</div>
     </div>
-    <div class="countdown-sub">seconds</div>
+
+    <div class="team-panel" id="team-panel"></div>
   </div>
 </div>
 
@@ -498,8 +654,48 @@ function buildCardTypes() {
   return types;
 }
 
+const TEAM_COLORS = [
+  '#c9a84c', // gold
+  '#6db4d4', // sky
+  '#d4886d', // coral
+  '#8ec77a', // sage
+  '#b08ec7', // lavender
+];
+
 let deck = [], flipped = [], matched = 0, tries = 0, locked = false;
 let timerSec = 0, timerRef = null, toastTimer = null, previewRef = null;
+let pendingTeamCount = 1, teamCount = 1, currentTeam = 0, teamScores = [0];
+
+/* ── Team selector ── */
+document.querySelectorAll('.team-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    pendingTeamCount = parseInt(btn.dataset.team, 10);
+    document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+function renderTeamPanel() {
+  const panel = document.getElementById('team-panel');
+  panel.innerHTML = '';
+
+  if (teamCount < 2) {
+    panel.classList.remove('show');
+    return;
+  }
+  panel.classList.add('show');
+
+  for (let i = 0; i < teamCount; i++) {
+    const el = document.createElement('div');
+    el.className = 'team-card' + (i === currentTeam ? ' active' : '');
+    el.style.setProperty('--team-color', TEAM_COLORS[i]);
+    el.innerHTML = `
+      <div class="team-card-label">Team ${i + 1}${i === currentTeam ? ' · turn' : ''}</div>
+      <div class="team-card-score">${teamScores[i]}</div>
+    `;
+    panel.appendChild(el);
+  }
+}
 
 const PREVIEW_SEC = 10;
 const CIRCUMFERENCE = 283; // 2π × r(45) ≈ 283
@@ -636,7 +832,9 @@ function checkMatch() {
     getWrap(a).classList.add('matched');
     getWrap(b).classList.add('matched');
     matched++;
+    teamScores[currentTeam]++;
     updateStats();
+    renderTeamPanel();
     flipped = [];
     locked = false;
 
@@ -644,23 +842,55 @@ function checkMatch() {
       stopTimer();
       setTimeout(showWin, 400);
     } else {
-      showToast('MATCH', 'ok', 850);
+      const label = teamCount >= 2 ? `TEAM ${currentTeam + 1} · MATCH` : 'MATCH';
+      showToast(label, 'ok', 850);
     }
   } else {
-    showToast('MISS', 'ng', 850);
+    const missLabel = teamCount >= 2 ? `TEAM ${currentTeam + 1} · MISS` : 'MISS';
+    showToast(missLabel, 'ng', 850);
     setTimeout(() => {
       deck[a].isFlipped = deck[b].isFlipped = false;
       getWrap(a).classList.remove('flipped');
       getWrap(b).classList.remove('flipped');
       flipped = [];
       locked = false;
+
+      if (teamCount >= 2) {
+        currentTeam = (currentTeam + 1) % teamCount;
+        renderTeamPanel();
+      }
     }, 1100);
   }
 }
 
 function showWin() {
-  document.getElementById('win-msg').textContent =
-    `${tries} attempts  ·  ${timerSec}s`;
+  const msg = document.getElementById('win-msg');
+
+  if (teamCount < 2) {
+    msg.innerHTML = `<div style="opacity:.85">${tries} attempts  ·  ${timerSec}s</div>`;
+  } else {
+    const ranked = teamScores
+      .map((score, i) => ({ team: i + 1, score, color: TEAM_COLORS[i] }))
+      .sort((a, b) => b.score - a.score);
+
+    const medals = ['🥇', '🥈', '🥉', '4', '5'];
+    const topScore = ranked[0].score;
+
+    let html = '<div class="ranks">';
+    ranked.forEach((r, idx) => {
+      const isWinner = r.score === topScore;
+      html += `
+        <div class="rank-row ${isWinner ? 'winner' : ''}" style="--team-color:${r.color}">
+          <span class="medal">${medals[idx]}</span>
+          <span class="team-name">Team ${r.team}</span>
+          <span class="team-pairs">${r.score} pairs</span>
+        </div>`;
+    });
+    html += '</div>';
+    html += `<div style="opacity:.75;letter-spacing:1px;">${tries} attempts  ·  ${timerSec}s</div>`;
+    msg.innerHTML = html;
+  }
+
   document.getElementById('overlay').classList.add('show');
 }
 
@@ -674,6 +904,12 @@ function startGame() {
   matched = 0; tries = 0; flipped = []; locked = false;
   updateStats();
   document.getElementById('timer').textContent = 0;
+
+  // apply selected team count for this game
+  teamCount   = pendingTeamCount;
+  currentTeam = 0;
+  teamScores  = Array(teamCount).fill(0);
+  renderTeamPanel();
 
   const types = buildCardTypes();
   let cards = [];

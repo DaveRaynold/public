@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1180, initial-scale=1.0" />
+<title>작은 숫자내기</title>
+<style>
+:root{
+  --nav-h:72px;
+  --stage-w:1180px;
+  --gold:#d6a531;
+  --gold2:#f1cf70;
+  --cream:#f3ead9;
+  --text:#f5efdf;
+  --muted:#b7ad9a;
+  --line:rgba(214,165,49,.42);
+  --line-soft:rgba(214,165,49,.22);
+  --panel:rgba(8,8,7,.88);
+  --card:#f6efdd;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  min-width:var(--stage-w);
+  color:var(--text);
+  background:
+    radial-gradient(circle at 14% 0%,rgba(214,165,49,.22),transparent 28%),
+    linear-gradient(90deg,rgba(214,165,49,.055) 1px,transparent 1px),
+    linear-gradient(0deg,rgba(214,165,49,.045) 1px,transparent 1px),
+    linear-gradient(180deg,#1a1507 0%,#090908 45%,#020202 100%);
+  background-size:auto,78px 78px,78px 78px,auto;
+  font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Arial,sans-serif;
+  word-break:keep-all;
+}
+
+a{text-decoration:none;color:inherit}
+
+header{
+  position:fixed;
+  top:0; left:0; right:0;
+  z-index:100;
+  height:var(--nav-h);
+  background:#050505;
+  border-bottom:1px solid var(--gold);
+}
+
+nav{
+  width:var(--stage-w);
+  height:var(--nav-h);
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:0 14px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  flex:0 0 auto;
+}
+
+.brand-logo{
+  width:44px;
+  height:44px;
+  position:relative;
+  flex:0 0 auto;
+}
+
+.logo-core{
+  position:absolute;
+  inset:9px;
+  background:linear-gradient(135deg,#f5d97a,#b88418);
+  transform:rotate(45deg);
+  border-radius:4px;
+  box-shadow:0 0 18px rgba(241,207,112,.55), inset 0 0 12px rgba(255,255,255,.35);
+}
+
+.logo-ring{
+  position:absolute;
+  inset:0;
+  border:1.5px solid rgba(241,207,112,.85);
+  transform:rotate(45deg);
+  border-radius:5px;
+}
+
+.logo-line{
+  position:absolute;
+  left:50%; top:50%;
+  width:64px; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(241,207,112,.85),transparent);
+  transform:translate(-50%,-50%) rotate(-45deg);
+  opacity:.7;
+}
+
+.brand-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1;
+}
+
+.brand-text span{
+  color:#f1cf70;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.18em;
+}
+
+.brand-text strong{
+  margin-top:5px;
+  color:#f5efdf;
+  font-size:24px;
+  font-weight:950;
+  letter-spacing:-.05em;
+}
+
+.menu{
+  display:flex;
+  flex-wrap:nowrap;
+  gap:8px;
+}
+
+.menu a{
+  height:38px;
+  min-width:58px;
+  padding:0 13px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--line);
+  border-radius:5px;
+  background:rgba(214,165,49,.07);
+  color:var(--text);
+  font-size:15px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.menu a:hover{
+  background:rgba(214,165,49,.16);
+  color:var(--gold2);
+}
+
+main{padding-top:var(--nav-h)}
+
+.page{
+  height:calc(100vh - var(--nav-h));
+  min-height:650px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px 0;
+}
+
+.inner{
+  width:calc(var(--stage-w) - 28px);
+  height:calc(100vh - var(--nav-h) - 36px);
+  min-height:614px;
+  border:1px solid var(--line-soft);
+  border-radius:8px;
+  background:
+    linear-gradient(90deg,rgba(214,165,49,.08),rgba(255,255,255,.018) 42%,rgba(0,0,0,.22)),
+    var(--panel);
+  position:relative;
+  overflow:hidden;
+  padding:44px 54px;
+}
+
+.inner::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(214,165,49,.045) 1px,transparent 1px),
+    linear-gradient(0deg,rgba(214,165,49,.035) 1px,transparent 1px);
+  background-size:58px 58px;
+  pointer-events:none;
+}
+
+.content{position:relative;z-index:2}
+
+.kicker{
+  color:var(--gold2);
+  font-size:21px;
+  font-weight:950;
+  letter-spacing:.02em;
+  margin-bottom:22px;
+}
+
+h1,h2{
+  margin:0;
+  color:var(--cream);
+  font-weight:950;
+  letter-spacing:-.075em;
+  line-height:.9;
+}
+
+h1{font-size:118px}
+h2{font-size:86px}
+
+.lead{
+  margin:24px 0 0;
+  color:var(--muted);
+  font-size:24px;
+  line-height:1.4;
+  font-weight:850;
+  letter-spacing:-.04em;
+}
+
+.hero{
+  display:grid;
+  grid-template-columns:1fr 500px;
+  gap:42px;
+  align-items:center;
+}
+
+.stats{
+  margin-top:30px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.stat{
+  min-height:104px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:rgba(0,0,0,.28);
+  display:grid;
+  place-items:center;
+  text-align:center;
+  padding:14px;
+}
+
+.stat b{
+  color:var(--gold2);
+  font-size:31px;
+  line-height:1;
+  letter-spacing:-.05em;
+}
+
+.stat span{
+  display:block;
+  margin-top:8px;
+  color:var(--muted);
+  font-size:15px;
+  font-weight:800;
+}
+
+.rule-box{
+  margin-top:18px;
+  padding:18px 24px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:rgba(0,0,0,.34);
+}
+
+.rule-box b{
+  display:block;
+  color:#fff;
+  font-size:26px;
+  line-height:1.15;
+  margin-bottom:8px;
+}
+
+.rule-box p{
+  margin:0;
+  color:var(--muted);
+  font-size:17px;
+  line-height:1.35;
+  border-left:4px solid var(--gold);
+  padding-left:16px;
+  font-weight:850;
+}
+
+.cards-scene{
+  position:relative;
+  height:390px;
+}
+
+.card{
+  width:160px;
+  height:232px;
+  border-radius:12px;
+  background:var(--card);
+  color:#111;
+  padding:15px;
+  box-shadow:0 22px 46px rgba(0,0,0,.45);
+  position:absolute;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.card small{
+  font-size:29px;
+  font-weight:950;
+  line-height:1;
+}
+
+.card b{
+  font-size:82px;
+  line-height:.85;
+  font-weight:950;
+}
+
+.card em{
+  font-style:normal;
+  font-size:52px;
+  line-height:1;
+  align-self:flex-end;
+}
+
+.card.red{color:#8d1e18}
+
+.card.win{
+  outline:4px solid var(--gold2);
+  box-shadow:0 0 28px rgba(242,205,103,.65),0 22px 46px rgba(0,0,0,.45);
+}
+
+.card.c1{left:16px;top:54px;transform:rotate(-8deg);z-index:3}
+.card.c2{left:170px;top:74px;transform:rotate(5deg);z-index:2}
+.card.c3{left:316px;top:110px;transform:rotate(13deg);z-index:1}
+
+.win-label{
+  position:absolute;
+  left:118px;
+  bottom:24px;
+  padding:14px 30px;
+  border:1px solid var(--gold);
+  border-radius:999px;
+  color:var(--gold2);
+  background:rgba(0,0,0,.55);
+  font-size:24px;
+  font-weight:950;
+}
+
+.hand-layout{
+  display:grid;
+  grid-template-columns:350px 1fr;
+  gap:42px;
+  align-items:center;
+  margin-top:34px;
+}
+
+.note{
+  display:grid;
+  gap:14px;
+}
+
+.note div{
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:rgba(0,0,0,.28);
+  padding:20px;
+}
+
+.note b{
+  color:#fff;
+  font-size:26px;
+  display:block;
+}
+
+.note span{
+  display:block;
+  margin-top:8px;
+  color:var(--muted);
+  font-size:17px;
+  line-height:1.42;
+  font-weight:800;
+}
+
+.hand{
+  min-height:330px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.hand .card{
+  position:relative;
+  left:auto;
+  top:auto;
+  width:142px;
+  height:208px;
+  margin-left:-40px;
+}
+
+.hand .card:first-child{margin-left:0}
+
+.tiles{
+  margin-top:36px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+
+.tile{
+  min-height:230px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:rgba(0,0,0,.28);
+  display:grid;
+  place-items:center;
+  text-align:center;
+  padding:22px;
+}
+
+.icon{
+  font-size:48px;
+  color:var(--gold2);
+  margin-bottom:18px;
+}
+
+.tile b{
+  display:block;
+  color:var(--gold2);
+  font-size:28px;
+  letter-spacing:-.06em;
+}
+
+.tile span{
+  display:block;
+  margin-top:13px;
+  color:var(--muted);
+  font-size:18px;
+  line-height:1.38;
+  font-weight:800;
+}
+
+.judge{
+  margin-top:34px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+}
+
+.judge-card{
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:rgba(0,0,0,.28);
+  padding:28px;
+  text-align:center;
+}
+
+.badge{
+  display:inline-flex;
+  padding:8px 18px;
+  border:1px solid var(--gold);
+  border-radius:999px;
+  color:var(--gold2);
+  font-weight:950;
+}
+
+.show{
+  margin:26px 0 20px;
+  display:flex;
+  justify-content:center;
+  gap:14px;
+}
+
+.show .card{
+  position:relative;
+  left:auto;
+  top:auto;
+  width:100px;
+  height:142px;
+  padding:10px;
+  transform:none;
+}
+
+.show .card small{font-size:19px}
+.show .card b{font-size:50px}
+.show .card em{font-size:28px}
+.show .card.out{opacity:.35;filter:grayscale(.8)}
+
+.result{
+  display:inline-flex;
+  padding:12px 26px;
+  border:1px solid var(--gold);
+  border-radius:999px;
+  color:var(--gold2);
+  font-size:22px;
+  font-weight:950;
+}
+
+.score{
+  margin-top:36px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:16px;
+}
+
+.score-card{
+  min-height:210px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:linear-gradient(180deg,rgba(214,165,49,.08),rgba(0,0,0,.28));
+  display:grid;
+  place-items:center;
+  text-align:center;
+  position:relative;
+  padding:22px;
+}
+
+.round{
+  position:absolute;
+  top:16px;
+  left:16px;
+  color:var(--gold2);
+  font-weight:950;
+}
+
+.point{
+  color:var(--gold2);
+  font-size:72px;
+  line-height:.9;
+  font-weight:950;
+  letter-spacing:-.08em;
+}
+
+.score-card.final .point{font-size:92px}
+
+.score-card span{
+  display:block;
+  margin-top:14px;
+  color:var(--muted);
+  font-size:17px;
+  font-weight:850;
+}
+
+.score-rule{
+  margin-top:22px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:rgba(0,0,0,.32);
+  padding:22px;
+  color:var(--gold2);
+  font-size:25px;
+  font-weight:950;
+  text-align:center;
+  letter-spacing:-.05em;
+}
+
+.two-tiles{
+  margin-top:36px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+}
+
+.two-tiles .tile{
+  min-height:280px;
+}
+
+.benefits{
+  margin-top:34px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+}
+
+.benefit{
+  min-height:350px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:rgba(0,0,0,.28);
+  padding:28px;
+  text-align:center;
+}
+
+.benefit-visual{
+  height:126px;
+  display:grid;
+  place-items:center;
+}
+
+.reverse{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+}
+
+.reverse .card{
+  position:relative;
+  left:auto;
+  top:auto;
+  width:80px;
+  height:116px;
+  padding:9px;
+  transform:none;
+}
+
+.reverse .card small{font-size:17px}
+.reverse .card b{font-size:42px}
+.reverse .card em{font-size:24px}
+
+.benefit-label{
+  display:inline-flex;
+  padding:8px 18px;
+  border:1px solid var(--gold);
+  border-radius:999px;
+  color:var(--gold2);
+  font-weight:950;
+}
+
+.benefit h3{
+  margin:16px 0 0;
+  font-size:42px;
+  letter-spacing:-.08em;
+}
+
+.benefit p{
+  margin:16px auto 0;
+  color:var(--muted);
+  font-size:20px;
+  line-height:1.4;
+  font-weight:800;
+  max-width:420px;
+}
+
+.limits{
+  margin-top:18px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+
+.limit{
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:rgba(0,0,0,.32);
+  text-align:center;
+}
+
+.limit b{
+  color:var(--gold2);
+  font-size:22px;
+}
+
+.limit span{
+  display:block;
+  margin-top:7px;
+  color:var(--muted);
+  font-weight:800;
+}
+</style>
+</head>
+
+<body>
+<header>
+  <nav>
+    <a class="brand" href="#overview">
+      <div class="brand-logo">
+        <div class="logo-core"></div>
+        <div class="logo-ring"></div>
+        <div class="logo-line"></div>
+      </div>
+      <div class="brand-text">
+        <span>SMALL NUMBER</span>
+        <strong>작은 숫자내기</strong>
+      </div>
+    </a>
+
+    <div class="menu">
+      <a href="#overview">개요</a>
+      <a href="#cards">카드</a>
+      <a href="#set">세트</a>
+      <a href="#round">라운드</a>
+      <a href="#judge">판정</a>
+      <a href="#score">점수</a>
+      <a href="#notice">공지</a>
+      <a href="#benefit">베네핏</a>
+      <a href="#win">승리</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+<section id="overview" class="page">
+  <div class="inner">
+    <div class="content hero">
+      <div>
+        <div class="kicker">SMALL NUMBER GAME</div>
+        <h1>작은<br>숫자내기</h1>
+        <p class="lead">팀당 한 명씩 출전하며, 제일 작은 숫자가 승리합니다.</p>
+        <div class="stats">
+          <div class="stat"><b>3세트</b><span>전체 진행</span></div>
+          <div class="stat"><b>5R</b><span>세트당 라운드</span></div>
+          <div class="stat"><b>A(1)~5</b><span>팀별 카드</span></div>
+          <div class="stat"><b>중복 탈락</b><span>같은 숫자는 패배</span></div>
+        </div>
+        <div class="rule-box">
+          <b>가장 많은 세트를 이긴 팀이 최종 승리</b>
+          <p>각 세트의 점수는 세트 종료 후 초기화됩니다.</p>
+        </div>
+      </div>
+      <div class="cards-scene">
+        <div class="card c1 win"><small>2♣</small><b>2</b><em>♣</em></div>
+        <div class="card c2 red"><small>4♥</small><b>4</b><em>♥</em></div>
+        <div class="card c3"><small>5♠</small><b>5</b><em>♠</em></div>
+        <div class="win-label">♣ 클로버 2 승리</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="cards" class="page">
+  <div class="inner">
+    <div class="content">
+      <div class="kicker">TEAM CARDS</div>
+      <h2>팀별 카드</h2>
+      <p class="lead">각 팀은 ace(1), 2, 3, 4, 5 카드를 가진 5명으로 구성됩니다. 참가자의 숫자는 게임 전체 동안 유지됩니다.</p>
+      <div class="hand-layout">
+        <div class="note">
+          <div><b>ace = 1</b><span>ace 카드는 숫자 1로 취급합니다.</span></div>
+          <div><b>숫자 고정</b><span>참가자의 카드 숫자는 게임 전체 동안 유지됩니다.</span></div>
+        </div>
+        <div class="hand">
+          <div class="card" style="transform:rotate(-14deg) translateY(26px)"><small>A♠</small><b>A</b><em>♠</em></div>
+          <div class="card red" style="transform:rotate(-7deg) translateY(8px)"><small>2♥</small><b>2</b><em>♥</em></div>
+          <div class="card" style="transform:rotate(0deg) translateY(-4px)"><small>3♣</small><b>3</b><em>♣</em></div>
+          <div class="card red" style="transform:rotate(7deg) translateY(8px)"><small>4♦</small><b>4</b><em>♦</em></div>
+          <div class="card" style="transform:rotate(14deg) translateY(26px)"><small>5♠</small><b>5</b><em>♠</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="set" class="page">
+  <div class="inner">
+    <div class="content">
+      <div class="kicker">BEFORE SET</div>
+      <h2>세트 시작 전</h2>
+      <p class="lead">세트 시작 전에는 10분의 논의 시간을 가지며, 팀 전략과 출전 순서를 논의합니다.</p>
+
+      <div class="two-tiles">
+        <div class="tile">
+          <div>
+            <div class="icon">⏱</div>
+            <b>10분 논의</b>
+            <span>각 팀은 세트 시작 전 전략과 출전 순서를 논의합니다.</span>
+          </div>
+        </div>
+
+        <div class="tile">
+          <div>
+            <div class="icon">📝</div>
+            <b>출전 순서 계획</b>
+            <span>이번 세트에서 누가 어느 라운드에 나갈지 팀별로 정리합니다.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="round" class="page">
+  <div class="inner">
+    <div class="content">
+      <div class="kicker">ROUND FLOW</div>
+      <h2>라운드 진행</h2>
+      <p class="lead">출전자는 라운드 카운트에 맞춰 동시에 일어납니다.</p>
+      <div class="tiles">
+        <div class="tile"><div><div class="icon">①</div><b>1분 논의</b><span>출전자 1명 결정</span></div></div>
+        <div class="tile"><div><div class="icon">②</div><b>카운트 대기</b><span>출전자는 자리에서 대기합니다.</span></div></div>
+        <div class="tile"><div><div class="icon">③</div><b>동시 출전</b><span>라운드 카운트에 맞춰 동시에 일어납니다.</span></div></div>
+        <div class="tile"><div><div class="icon">④</div><b>카드 공개</b><span>정해진 시간이 되면 카드 공개</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="judge" class="page">
+  <div class="inner">
+    <div class="content">
+      <div class="kicker">JUDGEMENT</div>
+      <h2>승리 판정</h2>
+      <p class="lead">가장 작은 유일 숫자가 승리합니다. 중복 숫자는 모두 탈락합니다.</p>
+      <div class="judge">
+        <div class="judge-card">
+          <div class="badge">예시 1 · 유일한 작은 숫자</div>
+          <div class="show">
+            <div class="card win"><small>2♣</small><b>2</b><em>♣</em></div>
+            <div class="card red"><small>4♥</small><b>4</b><em>♥</em></div>
+            <div class="card"><small>5♠</small><b>5</b><em>♠</em></div>
+          </div>
+          <div class="result">♣ 클로버 승리</div>
+        </div>
+        <div class="judge-card">
+          <div class="badge">예시 2 · 중복 탈락</div>
+          <div class="show">
+            <div class="card out"><small>2♣</small><b>2</b><em>♣</em></div>
+            <div class="card red out"><small>2♥</small><b>2</b><em>♥</em></div>
+            <div class="card win"><small>4♠</small><b>4</b><em>♠</em></div>
+          </div>
+          <div class="result">♠ 스페이드 승리</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="score" class="page">
+  <div class="inner">
+    <div class="content">
+      <div class="kicker">SCORE</div>
+      <h2>라운드 점수</h2>
+      <p class="lead">1~4라운드는 1점, 5라운드는 3점입니다.</p>
+      <div class="score">
+        <div class="score-card"><div class="round">1R</div><div><div class="point">1</div><span>1점</span></div></div>
+        <div class="score-card"><div class="round">2R</div><div><div class="point">1</div><span>1점</span></div></div>
+        <div class="score-card"><div class="round">3R</div><div><div class="point">1</div><span>1점</span></div></div>
+        <div class="score-card"><div class="round">4R</div><div><div class="point">1</div><span>1점</span></div></div>
+        <div class="score-card final"><div class="round">5R</div><div><div class="point">3</div><span>3점</span></div></div>
+      </div>
+      <div class="score-rule">1세트 합산 점수가 가장 높은 팀이 해당 세트를 승리합니다.</div>
+    </div>
+  </div>
+</section>
+
+<section id="notice" class="page">
+  <div class="inner">
+    <div class="content">
+      <div class="kicker">ROUND RESULT</div>
+      <h2>라운드 승패 결정</h2>
+      <p class="lead">Host가 한 명씩 카드를 밝히게 하고, 해당 라운드의 승리팀을 공지합니다.</p>
+      <div class="two-tiles">
+        <div class="tile"><div><div class="icon">🃏</div><b>카드 공개</b><span>Host 안내에 따라 한 명씩 카드를 밝힙니다.</span></div></div>
+        <div class="tile"><div><div class="icon">📣</div><b>승리팀 공지</b><span>Host는 해당 라운드의 승리팀을 공지합니다.</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="benefit" class="page">
+  <div class="inner">
+    <div class="content">
+      <div class="kicker">CAFE BENEFIT</div>
+      <h2>카페 베네핏</h2>
+      <p class="lead">사전 퀴즈를 맞춘 팀과 가장 적은 금액으로 산 팀은 역순권 베네핏을 가집니다.</p>
+
+      <div class="benefits" style="grid-template-columns:1fr;">
+        <div class="benefit">
+          <div class="benefit-visual">
+            <div class="reverse">
+              <div class="card"><small>2♣</small><b>2</b><em>♣</em></div>
+              <div class="card red"><small>4♥</small><b>4</b><em>♥</em></div>
+              <div class="card win"><small>5♠</small><b>5</b><em>♠</em></div>
+            </div>
+          </div>
+
+          <div class="benefit-label">사전 퀴즈 정답 팀 / 가장 적은 금액 구매 팀</div>
+          <h3>역순권</h3>
+          <p>
+            해당 라운드는 가장 작은 유일 숫자가 아니라 가장 큰 유일 숫자가 승리합니다.
+            단, 두 팀이 동시에 사용하면 기존 룰과 동일하게 가장 낮은 숫자가 승리합니다.
+          </p>
+        </div>
+      </div>
+
+      <div class="limits">
+        <div class="limit"><b>세트당 1회</b><span>각 베네핏 제한</span></div>
+        <div class="limit"><b>1~4R만</b><span>5R 사용 불가</span></div>
+        <div class="limit"><b>라운드 시작 전</b><span>(출전자 결정) 때 사용</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="win" class="page">
+  <div class="inner">
+    <div class="content">
+      <div class="kicker">WINNING CONDITION</div>
+      <h2>최종 승리</h2>
+      <p class="lead">각 세트가 끝나면 점수는 초기화됩니다. 총 3세트 중 가장 많은 세트를 승리한 팀이 최종 승리합니다.</p>
+      <div class="two-tiles">
+        <div class="tile"><div><div class="icon">🏁</div><b>세트 승리</b><span>해당 세트 최고 점수 팀</span></div></div>
+        <div class="tile"><div><div class="icon">🏆</div><b>최종 승리</b><span>3세트 중 가장 많은 세트 승리</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener("click", function(e) {
+    const id = this.getAttribute("href");
+    const target = document.querySelector(id);
+    if (!target) return;
+
+    e.preventDefault();
+
+    const navHeight = document.querySelector("header").offsetHeight;
+    const targetTop = target.offsetTop - navHeight;
+
+    window.scrollTo({
+      top: targetTop,
+      behavior: "smooth"
+    });
+  });
+});
+</script>
+</body>
+</html>
