@@ -1,0 +1,309 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>카운트다운</title>
+<style>
+:root{
+  --gold:#d6a531;
+  --gold2:#f1cf70;
+  --text:#f5efdf;
+  --line:rgba(214,165,49,.42);
+  --panel:rgba(8,8,7,.88);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 14% 0%,rgba(214,165,49,.22),transparent 28%),
+    linear-gradient(90deg,rgba(214,165,49,.055) 1px,transparent 1px),
+    linear-gradient(0deg,rgba(214,165,49,.045) 1px,transparent 1px),
+    linear-gradient(180deg,#1a1507 0%,#090908 45%,#020202 100%);
+  background-size:auto,78px 78px,78px 78px,auto;
+  font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Arial,sans-serif;
+  overflow:hidden;
+}
+
+.header{
+  position:absolute;
+  top:34px;
+  left:40px;
+}
+
+.kicker{
+  color:var(--gold2);
+  font-size:17px;
+  font-weight:950;
+  letter-spacing:.16em;
+}
+
+.title{
+  margin-top:8px;
+  font-size:52px;
+  font-weight:950;
+  letter-spacing:-.08em;
+}
+
+.wrap{
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.panel{
+  width:920px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:
+    linear-gradient(90deg,rgba(214,165,49,.08),rgba(255,255,255,.018) 42%,rgba(0,0,0,.22)),
+    var(--panel);
+  padding:70px 60px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.panel::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(214,165,49,.045) 1px,transparent 1px),
+    linear-gradient(0deg,rgba(214,165,49,.035) 1px,transparent 1px);
+  background-size:58px 58px;
+  pointer-events:none;
+}
+
+.content{
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.time-inputs{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  margin-bottom:40px;
+}
+
+.time-inputs input{
+  width:150px;
+  height:78px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:rgba(0,0,0,.34);
+  color:var(--gold2);
+  font-size:54px;
+  font-weight:950;
+  text-align:center;
+  outline:none;
+}
+
+.time-inputs span{
+  color:var(--gold2);
+  font-size:58px;
+  font-weight:950;
+  line-height:1;
+  transform:translateY(-4px);
+}
+
+#timer{
+  font-size:190px;
+  line-height:.9;
+  font-weight:950;
+  letter-spacing:-.1em;
+  transition:.25s;
+  margin-bottom:46px;
+}
+
+#timer.warning{
+  color:#ff5a5a;
+  transform:scale(1.04);
+  text-shadow:0 0 26px rgba(255,90,90,.55);
+}
+
+.buttons{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+}
+
+button{
+  width:150px;
+  height:58px;
+  border:1px solid var(--line);
+  border-radius:7px;
+  background:rgba(214,165,49,.07);
+  color:var(--text);
+  font-size:20px;
+  font-weight:900;
+  cursor:pointer;
+  transition:.2s;
+}
+
+button:hover{
+  background:rgba(214,165,49,.16);
+  color:var(--gold2);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="kicker">COUNTDOWN TIMER</div>
+  <div class="title">카운트다운</div>
+</div>
+
+<div class="wrap">
+  <div class="panel">
+    <div class="content">
+      <div class="time-inputs">
+        <input id="minuteInput" type="number" min="0" max="99" value="1" inputmode="numeric">
+        <span>:</span>
+        <input id="secondInput" type="number" min="0" max="59" value="0" inputmode="numeric">
+      </div>
+
+      <div id="timer">01:00</div>
+
+      <div class="buttons">
+        <button id="startBtn">시작</button>
+        <button id="stopBtn">멈춤</button>
+        <button id="resetBtn">초기화</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const minuteInput = document.getElementById('minuteInput');
+const secondInput = document.getElementById('secondInput');
+const timer = document.getElementById('timer');
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+let countdown = null;
+let totalSeconds = 60;
+let initialSeconds = 60;
+let isRunning = false;
+
+function clampNumber(value, min, max){
+  const number = parseInt(value, 10);
+  if(Number.isNaN(number)) return min;
+  return Math.min(Math.max(number, min), max);
+}
+
+function getInputSeconds(){
+  const minutes = clampNumber(minuteInput.value, 0, 99);
+  const seconds = clampNumber(secondInput.value, 0, 59);
+  return minutes * 60 + seconds;
+}
+
+function syncInputs(seconds){
+  minuteInput.value = Math.floor(seconds / 60);
+  secondInput.value = seconds % 60;
+}
+
+function formatTime(seconds){
+  const min = String(Math.floor(seconds / 60)).padStart(2,'0');
+  const sec = String(seconds % 60).padStart(2,'0');
+  return `${min}:${sec}`;
+}
+
+function render(){
+  timer.textContent = formatTime(totalSeconds);
+
+  if(totalSeconds > 0 && totalSeconds <= 10){
+    timer.classList.add('warning');
+  }else{
+    timer.classList.remove('warning');
+  }
+}
+
+function stopTimer(){
+  if(countdown !== null){
+    clearInterval(countdown);
+    countdown = null;
+  }
+  isRunning = false;
+}
+
+function startTimer(){
+  stopTimer();
+
+  const inputSeconds = getInputSeconds();
+  if(inputSeconds <= 0){
+    totalSeconds = 0;
+    initialSeconds = 0;
+    render();
+    return;
+  }
+
+  totalSeconds = inputSeconds;
+  initialSeconds = inputSeconds;
+  syncInputs(initialSeconds);
+  render();
+
+  isRunning = true;
+
+  countdown = setInterval(()=>{
+    if(totalSeconds <= 1){
+      totalSeconds = 0;
+      render();
+      stopTimer();
+      return;
+    }
+
+    totalSeconds -= 1;
+    render();
+  },1000);
+}
+
+minuteInput.addEventListener('input', ()=>{
+  minuteInput.value = clampNumber(minuteInput.value, 0, 99);
+  if(!isRunning){
+    totalSeconds = getInputSeconds();
+    initialSeconds = totalSeconds;
+    render();
+  }
+});
+
+secondInput.addEventListener('input', ()=>{
+  secondInput.value = clampNumber(secondInput.value, 0, 59);
+  if(!isRunning){
+    totalSeconds = getInputSeconds();
+    initialSeconds = totalSeconds;
+    render();
+  }
+});
+
+startBtn.addEventListener('click', startTimer);
+
+stopBtn.addEventListener('click', stopTimer);
+
+resetBtn.addEventListener('click', ()=>{
+  stopTimer();
+  totalSeconds = initialSeconds;
+  syncInputs(initialSeconds);
+  render();
+});
+
+syncInputs(initialSeconds);
+render();
+</script>
+</body>
+</html>
+
