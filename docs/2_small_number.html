@@ -2,12 +2,12 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=1180, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>작은 숫자내기</title>
 <style>
 :root{
   --nav-h:72px;
-  --stage-w:1180px;
+  --stage-w:1500px;
   --gold:#d6a531;
   --gold2:#f1cf70;
   --cream:#f3ead9;
@@ -24,7 +24,7 @@ html{scroll-behavior:smooth}
 
 body{
   margin:0;
-  min-width:var(--stage-w);
+  min-width:1180px;
   color:var(--text);
   background:
     radial-gradient(circle at 14% 0%,rgba(214,165,49,.22),transparent 28%),
@@ -48,7 +48,7 @@ header{
 }
 
 nav{
-  width:var(--stage-w);
+  width:min(var(--stage-w), calc(100vw - 48px));
   height:var(--nav-h);
   margin:0 auto;
   display:flex;
@@ -141,7 +141,8 @@ nav{
   white-space:nowrap;
 }
 
-.menu a:hover{
+.menu a:hover,
+.menu a.active{
   background:rgba(214,165,49,.16);
   color:var(--gold2);
 }
@@ -150,7 +151,7 @@ main{padding-top:var(--nav-h)}
 
 .page{
   height:calc(100vh - var(--nav-h));
-  min-height:650px;
+  min-height:720px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -158,9 +159,10 @@ main{padding-top:var(--nav-h)}
 }
 
 .inner{
-  width:calc(var(--stage-w) - 28px);
-  height:calc(100vh - var(--nav-h) - 36px);
-  min-height:614px;
+  width:min(calc(var(--stage-w) - 28px), calc(177.778vh - 192px), calc(100vw - 56px));
+  aspect-ratio:16 / 9;
+  height:auto;
+  max-height:calc(100vh - var(--nav-h) - 36px);
   border:1px solid var(--line-soft);
   border-radius:8px;
   background:
@@ -891,23 +893,92 @@ h2{font-size:86px}
 </main>
 
 <script>
-document.querySelectorAll('a[href^="#"]').forEach(link => {
+const pageSections = Array.from(document.querySelectorAll("main > section.page"));
+const navLinks = Array.from(document.querySelectorAll('.menu a[href^="#"]'));
+const header = document.querySelector("header");
+
+function navHeight() {
+  return header ? header.offsetHeight : 0;
+}
+
+function sectionTop(section) {
+  return Math.max(0, section.offsetTop - navHeight());
+}
+
+function currentIndex() {
+  const y = window.scrollY;
+  let best = 0;
+  let bestDistance = Infinity;
+
+  pageSections.forEach((section, index) => {
+    const distance = Math.abs(sectionTop(section) - y);
+    if (distance < bestDistance) {
+      best = index;
+      bestDistance = distance;
+    }
+  });
+
+  return best;
+}
+
+function updateNav() {
+  const section = pageSections[currentIndex()];
+  if (!section) return;
+
+  navLinks.forEach((link) => {
+    link.classList.toggle("active", link.getAttribute("href") === `#${section.id}`);
+  });
+}
+
+function goToSection(index) {
+  const safeIndex = Math.max(0, Math.min(pageSections.length - 1, index));
+  const section = pageSections[safeIndex];
+  if (!section) return;
+
+  window.scrollTo({
+    top: sectionTop(section),
+    behavior: "smooth"
+  });
+}
+
+function go(delta) {
+  goToSection(currentIndex() + delta);
+}
+
+navLinks.forEach((link) => {
   link.addEventListener("click", function(e) {
     const id = this.getAttribute("href");
     const target = document.querySelector(id);
     if (!target) return;
 
     e.preventDefault();
-
-    const navHeight = document.querySelector("header").offsetHeight;
-    const targetTop = target.offsetTop - navHeight;
-
-    window.scrollTo({
-      top: targetTop,
-      behavior: "smooth"
-    });
+    goToSection(pageSections.indexOf(target));
   });
 });
+
+window.addEventListener("keydown", (event) => {
+  const tagName = event.target && event.target.tagName;
+  const isTyping =
+    tagName === "INPUT" ||
+    tagName === "TEXTAREA" ||
+    tagName === "SELECT" ||
+    event.target.isContentEditable;
+
+  if (isTyping) return;
+
+  if (event.key === "ArrowDown" || event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+    event.preventDefault();
+    go(1);
+  }
+
+  if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "PageUp") {
+    event.preventDefault();
+    go(-1);
+  }
+});
+
+window.addEventListener("scroll", () => window.requestAnimationFrame(updateNav), { passive: true });
+updateNav();
 </script>
 </body>
 </html>
